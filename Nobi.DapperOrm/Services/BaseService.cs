@@ -6,15 +6,9 @@ using Nobi.DapperOrm.Entities;
 using Nobi.DapperOrm.Repositories;
 using Nobi.ExcelLib;
 using OfficeOpenXml.Style;
-using System;
-using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nobi.DapperOrm.Services
 {
@@ -166,7 +160,7 @@ namespace Nobi.DapperOrm.Services
                 return Task.FromResult(false);
             }
         }
-               
+
         public virtual Task<TEntity> GetObjectByCondition(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
             try

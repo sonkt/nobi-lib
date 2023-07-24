@@ -1,22 +1,16 @@
 ﻿using Dapper;
-using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
 using MicroOrm.Dapper.Repositories;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
 using Microsoft.Data.SqlClient;
 using Nobi.Base;
-using System;
+using Nobi.Base.Helpers;
+using Nobi.DapperOrm.Context;
+using Nobi.DapperOrm.Entities;
 using System.Collections;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using Nobi.DapperOrm.Entities;
-using Nobi.DapperOrm.Context;
-using Nobi.Base.Helpers;
 
 namespace Nobi.DapperOrm.Repositories
 {

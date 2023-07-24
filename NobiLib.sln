@@ -19,6 +19,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nobi.Swagger", "Nobi.Swagge
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nobi.Jwt", "Nobi.Jwt\Nobi.Jwt.csproj", "{91BABF42-A094-48AE-8F0B-FFAD5AB610FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nobi.Loging", "Nobi.Loging\Nobi.Loging.csproj", "{C73D33F5-821E-4422-A204-6EA6504360DD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nobi.Extensions", "Nobi.Extensions\Nobi.Extensions.csproj", "{E305A9D1-A772-4666-98C8-70F98FD3FCAC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -57,6 +61,14 @@ Global
 		{91BABF42-A094-48AE-8F0B-FFAD5AB610FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{91BABF42-A094-48AE-8F0B-FFAD5AB610FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{91BABF42-A094-48AE-8F0B-FFAD5AB610FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C73D33F5-821E-4422-A204-6EA6504360DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C73D33F5-821E-4422-A204-6EA6504360DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C73D33F5-821E-4422-A204-6EA6504360DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C73D33F5-821E-4422-A204-6EA6504360DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E305A9D1-A772-4666-98C8-70F98FD3FCAC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E305A9D1-A772-4666-98C8-70F98FD3FCAC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E305A9D1-A772-4666-98C8-70F98FD3FCAC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E305A9D1-A772-4666-98C8-70F98FD3FCAC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

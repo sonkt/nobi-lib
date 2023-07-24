@@ -1,13 +1,8 @@
 ﻿using StackExchange.Redis;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nobi.Redis
 {
-    public interface IRedisCache:IDisposable
+    public interface IRedisCache : IDisposable
     {
         void Clear();
 

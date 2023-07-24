@@ -1,9 +1,4 @@
 ﻿using Microsoft.AspNetCore.SignalR;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nobi.Jwt
 {
@@ -50,7 +45,7 @@ namespace Nobi.Jwt
                 .Select(x => x.Value)
                 .FirstOrDefault();
         }
-     
+
         public static bool IsAdmin(this HubCallerContext callerContext) =>
             callerContext?.User?.IsInRole("admin") ?? false;
 

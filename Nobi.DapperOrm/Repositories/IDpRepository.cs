@@ -1,14 +1,9 @@
 ﻿using MicroOrm.Dapper.Repositories;
 using Microsoft.Data.SqlClient;
-using Nobi.DapperOrm.Entities;
 using Nobi.Base;
-using System;
-using System.Collections.Generic;
+using Nobi.DapperOrm.Entities;
 using System.Data;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nobi.DapperOrm.Repositories
 {

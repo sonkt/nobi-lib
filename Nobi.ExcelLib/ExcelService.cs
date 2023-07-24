@@ -1,7 +1,6 @@
 ﻿using Nobi.Base.Helpers;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
-using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
 

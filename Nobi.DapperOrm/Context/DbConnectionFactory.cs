@@ -1,13 +1,8 @@
 ﻿using MicroOrm.Dapper.Repositories.SqlGenerator;
 using Microsoft.Data.SqlClient;
-using System;
-using System.Collections.Generic;
-using System.Data.Common;
 using System.Data;
-using System.Linq;
+using System.Data.Common;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Nobi.DapperOrm.Context
 {

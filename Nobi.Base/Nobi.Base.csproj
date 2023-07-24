@@ -10,4 +10,8 @@
     <PackageReference Include="MediatR" Version="12.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Nobi.Extensions\Nobi.Extensions.csproj" />
+  </ItemGroup>
+
 </Project>
