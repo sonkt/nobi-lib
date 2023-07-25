@@ -9,13 +9,22 @@
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>Base of GbLib packages</Description>
     <PackageOutputPath>bin\Release\</PackageOutputPath>
-    <Version>1.0.3</Version>
+    <Version>1.0.7</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="7.0.1" />
+    <PackageReference Include="AutoMapper" Version="12.0.1" />
     <PackageReference Include="Grpc.Net.Client" Version="2.55.0" />
     <PackageReference Include="MediatR" Version="12.1.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" Version="2.2.5" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="7.0.0" />
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="7.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Options.ConfigurationExtensions" Version="7.0.0" />
+    <PackageReference Include="OpenTracing" Version="0.12.1" />
     <PackageReference Include="protobuf-net.Grpc.ClientFactory" Version="1.1.1" />
   </ItemGroup>
 
