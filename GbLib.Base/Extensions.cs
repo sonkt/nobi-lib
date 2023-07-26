@@ -1,4 +1,11 @@
 ﻿using Autofac;
+using GbLib.Base.Mvc;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.HttpOverrides;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -33,5 +40,56 @@ namespace GbLib.Base
                 .AsClosedTypesOf(typeof(ICommandHandler<>))
                 .InstancePerLifetimeScope();
         }
+
+        public static IMvcCoreBuilder AddCustomMvc(this IServiceCollection services)
+        {
+            services.AddCors(options =>
+            {
+                options.AddPolicy("DatOrigins",
+                builder =>
+                {
+                    builder
+                        .AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod();
+                });
+            });
+
+            services.AddMvcCore(options =>
+            {
+                options.OutputFormatters.Remove(new XmlDataContractSerializerOutputFormatter());
+                options.UseCentralRoutePrefix(new RouteAttribute("api/v{version:apiVersion}"));
+            })
+            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
+
+            services.AddApiVersioning(x =>
+            {
+                x.ReportApiVersions = true;
+            });
+            services.AddVersionedApiExplorer(
+                options =>
+                {
+                    options.GroupNameFormat = "'v'VVV";
+
+                    options.SubstituteApiVersionInUrl = true;
+                });
+
+            services.AddSingleton<ISelfInfoService, SelfInfoService>();
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            return services
+                .AddMvcCore()
+                .AddDataAnnotations()
+                .AddApiExplorer()
+                .AddAuthorization();
+        }
+        public static IApplicationBuilder UseAllForwardedHeaders(this IApplicationBuilder builder)
+       => builder.UseForwardedHeaders(new ForwardedHeadersOptions
+       {
+           ForwardedHeaders = ForwardedHeaders.All
+       });
+        public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder builder)
+        => builder.UseMiddleware<ErrorHandlerMiddleware>();
     }
+
 }

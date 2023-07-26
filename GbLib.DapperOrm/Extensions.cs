@@ -4,12 +4,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using GbLib.DapperOrm.Context;
 using GbLib.DapperOrm.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 namespace GbLib.DapperOrm
 {
     public static class Extensions
     {
-        public static IServiceCollection AddDapperOrm(this IServiceCollection services)
+        public static IServiceCollection AddDapperOrm<TDbContext>(this IServiceCollection services) where TDbContext : BaseDbContext
         {
             var svcProvider = services.BuildServiceProvider();
             var config = svcProvider.GetRequiredService<IConfiguration>();
@@ -27,6 +28,24 @@ namespace GbLib.DapperOrm
             services.AddScoped(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>(factory => new DbConnectionFactory(connectionString, SqlProvider.MSSQL));
             services.AddScoped(typeof(IDpRepository<,>), typeof(DpRepository<,>));
+
+            services.AddDbContext<TDbContext>((sp, o) =>
+            {
+                var connectionString = Environment.GetEnvironmentVariable("CONN_STR");
+                if (string.IsNullOrEmpty(connectionString))
+                {
+                    connectionString = options.ConnString;
+                }
+                o.UseSqlServer(connectionString,
+                        sqlOptions =>
+                        {
+                            sqlOptions.EnableRetryOnFailure(
+                                15,
+                                TimeSpan.FromSeconds(30),
+                                null);
+                        })
+                    .EnableSensitiveDataLogging();
+            }, ServiceLifetime.Scoped);
 
             return services;
         }

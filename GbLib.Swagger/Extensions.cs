@@ -33,13 +33,13 @@ namespace GbLib.Swagger
                         TermsOfService = new Uri("https://example.com/terms"),
                         Contact = new OpenApiContact
                         {
-                            Name = "QLCC Mobile",
+                            Name = "Mobile",
                             Email = swaggerOptions.Contact,
                             Url = new Uri("https://twitter.com/spboyer"),
                         },
                         License = new OpenApiLicense
                         {
-                            Name = "Qlcc Mobile LICX",
+                            Name = "Mobile LICX",
                             Url = new Uri("https://example.com/license"),
                         }
                     });

@@ -36,7 +36,7 @@ namespace GbLib.Base.Mvc
             _tracer = tracer;
         }
 
-        public virtual async Task<FileContentResult> GetFileFromUrl(string url, string downloadName)
+        protected virtual async Task<FileContentResult> GetFileFromUrl(string url, string downloadName)
         {
             try
             {

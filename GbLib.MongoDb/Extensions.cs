@@ -52,5 +52,14 @@ namespace GbLib.MongoDb
             services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
             return services;
         }
+        public static IServiceCollection AddRepositories<T>(this IServiceCollection services) where T : class
+        {
+            services.Scan(scan => scan
+            .FromAssemblyOf<T>()
+                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Repository")))
+                    .AsImplementedInterfaces()
+                    .WithScopedLifetime());
+            return services;
+        }
     }
 }
