@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Formatters;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -62,6 +63,13 @@ namespace GbLib.Base
             })
             .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
 
+            using (var serviceProvider = services.BuildServiceProvider())
+            {
+                var configuration = serviceProvider.GetService<IConfiguration>();
+                var kestrelOptions = new KestrelServerOptions();
+                configuration.Bind("Kestrel", kestrelOptions);
+                services.Configure<KestrelServerOptions>("Kestrel", configuration);
+            }
             services.AddApiVersioning(x =>
             {
                 x.ReportApiVersions = true;
