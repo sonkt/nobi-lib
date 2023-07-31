@@ -163,6 +163,46 @@
             }
 
         }
+        public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
+        {
+            int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
+            return dt.AddDays(-1 * diff).Date;
+        }
+        public static DateTime EndOfWeek(this DateTime date, DayOfWeek startOfWeek)
+        {
+            DateTime firstDayInWeek = date.StartOfWeek(startOfWeek);
+            return firstDayInWeek.AddDays(6);
+        }
+
+        public static DateTime StartOfMonth(this DateTime date)
+        {
+            return new DateTime(date.Year, date.Month, 1);
+        }
+        public static DateTime EndOfMonth(this DateTime date)
+        {
+            var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
+            return firstDayOfMonth.AddMonths(1).AddSeconds(-1);
+        }
+
+        public static DateTime StartOfQuater(this DateTime date)
+        {
+            int currQuarter = (date.Month - 1) / 3 + 1;
+
+            return new DateTime(date.Year, 3 * currQuarter - 2, 1);
+        }
+        public static DateTime EndOfQuater(this DateTime date)
+        {
+            int currQuarter = (date.Month - 1) / 3 + 1;
+            return new DateTime(date.Year, 3 * currQuarter + 1, 1).AddDays(-1);
+        }
+        public static DateTime StartOfYear(this DateTime date)
+        {
+            return new DateTime(date.Year, 1, 1);
+        }
+        public static DateTime EndOfYear(this DateTime date)
+        {
+            return new DateTime(date.Year, 12, 31);
+        }
         #endregion Methods
     }
 }

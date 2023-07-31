@@ -27,6 +27,8 @@ namespace GbLib.Base
 
         public Guid? UpdatedUser { get; set; } = Guid.Empty;
 
+        public string Description { get; set; }
+
         public ValidationResult ValidationResult { get; set; }
 
         #endregion Properties

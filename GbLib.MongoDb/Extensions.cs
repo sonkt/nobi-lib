@@ -1,6 +1,8 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 using GbLib.MongoDb.Repositories;
+using GbLib.Base;
+using GbLib.MongoDb.Context;
 
 namespace GbLib.MongoDb
 {
@@ -49,6 +51,7 @@ namespace GbLib.MongoDb
 
         public static IServiceCollection AddMongoRepository(this IServiceCollection services)
         {
+            services.AddAppSettings<MongoDbOptions>("Mongo");
             services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
             return services;
         }
