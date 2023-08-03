@@ -21,7 +21,6 @@ namespace GbLib.Base.Mvc
         public int PageSize { get; set; }
 
         public Dictionary<string, bool>? SortingColumnsList { get; set; }
-        public Guid FK_OrgnizationId { get; set; } = Guid.Empty;
 
         #endregion Properties
     }

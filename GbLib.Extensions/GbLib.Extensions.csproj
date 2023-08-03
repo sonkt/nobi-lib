@@ -8,6 +8,7 @@
     <Title>GbLib.Extensions</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>Extensions for other library in GbLib Packages</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
