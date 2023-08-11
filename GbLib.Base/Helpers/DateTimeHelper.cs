@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using Microsoft.AspNetCore.Components.Forms;
+using System.Globalization;
 
 namespace GbLib.Base.Helpers
 {
@@ -261,6 +262,18 @@ namespace GbLib.Base.Helpers
         {
             var timeInTicks = intDate * TimeSpan.TicksPerSecond;
             return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddTicks(timeInTicks);
+        }
+        public static DateTime ToLocalDateTime(this long unixDate, bool inTick = false)
+        {
+            if (inTick)
+            {
+                var timeInTicks = unixDate * TimeSpan.TicksPerSecond;
+                return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddTicks(timeInTicks).ToLocalTime();
+            }
+            else
+            {
+                return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixDate).ToLocalTime();
+            }
         }
         public static long ToEpochFromDateTime(this DateTime date)
         {
