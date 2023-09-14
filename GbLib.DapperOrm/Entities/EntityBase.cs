@@ -24,6 +24,14 @@ namespace GbLib.DapperOrm.Entities
 
         public string? Description { get; set; }
 
+        [IgnoreUpdate]
+        [IgnoreInsert]
+        public Guid? DeletedUser { get; set; }
+
+        [IgnoreUpdate]
+        [IgnoreInsert]
+        public DateTime? DeletedDate { get; set; }
+
         #endregion Properties
     }
 

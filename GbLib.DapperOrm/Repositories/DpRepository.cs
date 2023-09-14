@@ -18,20 +18,16 @@ namespace GbLib.DapperOrm.Repositories
         where TEntity : class, IAuditEntity<TId>
     {
         public bool UseTVP { get; set; } = false;
-        private readonly IDbConnection _connection;
+        //private readonly IDbConnection _connection;
         private readonly IDomainEventDispatcher _domainEventDispatcher;
         private readonly IDbConnectionFactory _dbConnectionFactory;
         private IDbTransaction _dbTransaction;
         public DpRepository(IDbConnectionFactory dbConnectionFactory, ISqlGenerator<TEntity> generator, IDomainEventDispatcher domainEventDispatcher) : base(dbConnectionFactory.OpenDbConnection(), generator)
         {
             _dbConnectionFactory = dbConnectionFactory;
-            _connection = _dbConnectionFactory.OpenDbConnection();
             _domainEventDispatcher = domainEventDispatcher;
         }
-        public IDbConnection GetConnection()
-        {
-            return _connection;
-        }
+      
         public IDbTransaction GetTransaction()
         {
             return _dbConnectionFactory.GetDbTransaction();
@@ -164,7 +160,7 @@ namespace GbLib.DapperOrm.Repositories
 
         public async Task<int> ExecuteRawSql(string sql, IDbTransaction? dbTransaction = null)
         {
-            return await _connection.ExecuteAsync(sql, null, dbTransaction);
+            return await Connection.ExecuteAsync(sql, null, dbTransaction);
         }
 
         public async Task<int> ExecuteStoreProcedure(string storeProcedureName, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null)
@@ -184,7 +180,7 @@ namespace GbLib.DapperOrm.Repositories
                     }
                 }
                 var commandDefinition = new CommandDefinition(storeProcedureName, dynParams, dbTransaction, null, CommandType.StoredProcedure);
-                return await _connection.ExecuteAsync(commandDefinition);
+                return await Connection.ExecuteAsync(commandDefinition);
             }
             catch (Exception ex)
             {
@@ -211,7 +207,7 @@ namespace GbLib.DapperOrm.Repositories
                 }
 
                 var commandDefinition = new CommandDefinition(storeProcedureName, dynParams, dbTransaction, null, CommandType.StoredProcedure);
-                var result = await _connection.ExecuteAsync(commandDefinition);
+                var result = await Connection.ExecuteAsync(commandDefinition);
                 if (result > 0)
                 {
                     foreach (var item in parammeters)
@@ -318,7 +314,7 @@ namespace GbLib.DapperOrm.Repositories
                     if (typeof(IDeleteEntity).IsAssignableFrom(typeof(TEntity)))
                     {
                         ((IDeleteEntity)item).IsDeleted = true;
-                        item.UpdatedDate = DateTime.Now;
+                        item.DeletedDate = DateTime.Now;
                         SetMinDateIfNull(item);
                     }
                 }
@@ -355,7 +351,7 @@ namespace GbLib.DapperOrm.Repositories
                         if (typeof(IDeleteEntity).IsAssignableFrom(typeof(TEntity)))
                         {
                             ((IDeleteEntity)item).IsDeleted = true;
-                            item.UpdatedDate = DateTime.Now;
+                            item.DeletedDate = DateTime.Now;
                             SetMinDateIfNull(item);
                         }
                     }
@@ -384,7 +380,7 @@ namespace GbLib.DapperOrm.Repositories
             else if (typeof(IDeleteEntity).IsAssignableFrom(typeof(TEntity)))
             {
                 ((IDeleteEntity)entity).IsDeleted = true;
-                entity.UpdatedDate = DateTime.Now;
+                entity.DeletedDate = DateTime.Now;
                 SetMinDateIfNull(entity);
                 var result = await base.UpdateAsync(entity, dbTransaction);
                 if (result)
@@ -556,8 +552,10 @@ namespace GbLib.DapperOrm.Repositories
                     PropertyInfo keyOfEntity = entity.GetType().GetProperty(keyNameOfEntity, BindingFlags.Public | BindingFlags.Instance);
                     PropertyInfo createdDateOfEntity = entity.GetType().GetProperty("CreatedDate", BindingFlags.Public | BindingFlags.Instance);
                     PropertyInfo updatedDateOfEntity = entity.GetType().GetProperty("UpdatedDate", BindingFlags.Public | BindingFlags.Instance);
+                    PropertyInfo deletedDateOfEntity = entity.GetType().GetProperty("DeletedDate", BindingFlags.Public | BindingFlags.Instance);
                     PropertyInfo createdUserOfEntity = entity.GetType().GetProperty("CreatedUser", BindingFlags.Public | BindingFlags.Instance);
                     PropertyInfo updatedUserOfEntity = entity.GetType().GetProperty("UpdatedUser", BindingFlags.Public | BindingFlags.Instance);
+                    PropertyInfo deletedUserOfEntity = entity.GetType().GetProperty("DeletedUser", BindingFlags.Public | BindingFlags.Instance);
                     PropertyInfo isDeletedOfEntity = entity.GetType().GetProperty("IsDeleted", BindingFlags.Public | BindingFlags.Instance);
 
                     var events = ((dynamic)entity).GetUncommittedEvents();
@@ -579,11 +577,18 @@ namespace GbLib.DapperOrm.Repositories
                             {
                                 createdDateOfEvent.SetValue(domainEvent, createdDateOfEntity.GetValue(entity), null);
                             }
-                            // CreatedDate
+                            // UpdatedDate
                             PropertyInfo updatedDateOfEvent = domainEvent.GetType().GetProperty("UpdatedDate", BindingFlags.Public | BindingFlags.Instance);
                             if (null != updatedDateOfEvent && updatedDateOfEvent.CanWrite)
                             {
                                 updatedDateOfEvent.SetValue(domainEvent, updatedDateOfEntity.GetValue(entity), null);
+                            }
+
+                            // DeletedDate
+                            PropertyInfo deletedDateOfEvent = domainEvent.GetType().GetProperty("DeletedDate", BindingFlags.Public | BindingFlags.Instance);
+                            if (null != deletedDateOfEvent && deletedDateOfEvent.CanWrite)
+                            {
+                                deletedDateOfEvent.SetValue(domainEvent, deletedDateOfEntity.GetValue(entity), null);
                             }
 
                             // CreatedUser
@@ -592,11 +597,18 @@ namespace GbLib.DapperOrm.Repositories
                             {
                                 createdUserOfEvent.SetValue(domainEvent, createdUserOfEntity.GetValue(entity), null);
                             }
-                            // CreatedUser
+                            // UpdatedUser
                             PropertyInfo updatedUserOfEvent = domainEvent.GetType().GetProperty("UpdatedUser", BindingFlags.Public | BindingFlags.Instance);
                             if (null != updatedUserOfEvent && updatedUserOfEvent.CanWrite)
                             {
                                 updatedUserOfEvent.SetValue(domainEvent, updatedUserOfEntity.GetValue(entity), null);
+                            }
+
+                            // DeletedUser
+                            PropertyInfo deletedUserOfEvent = domainEvent.GetType().GetProperty("DeletedUser", BindingFlags.Public | BindingFlags.Instance);
+                            if (null != deletedUserOfEvent && deletedUserOfEvent.CanWrite)
+                            {
+                                deletedUserOfEvent.SetValue(domainEvent, deletedUserOfEntity.GetValue(entity), null);
                             }
 
                             // IsDeleted
@@ -615,9 +627,9 @@ namespace GbLib.DapperOrm.Repositories
             }
         }
 
-        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, IDbTransaction? dbTransaction = null)
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql,object param = null, IDbTransaction? dbTransaction = null)
         {
-            return await _connection.QueryAsync<T>(sql, dbTransaction);
+            return await Connection.QueryAsync<T>(sql,param, dbTransaction);
 
         }
     }

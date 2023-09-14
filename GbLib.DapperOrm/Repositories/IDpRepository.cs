@@ -28,7 +28,7 @@ namespace GbLib.DapperOrm.Repositories
         Task<int> ExecuteRawSql(string sql, IDbTransaction? dbTransaction = null);
         Task<int> ExecuteStoreProcedure(string storeProcedureName, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null);
 
-        Task<IEnumerable<T>> QueryAsync<T>(string sql, IDbTransaction? dbTransaction = null);
+        Task<IEnumerable<T>> QueryAsync<T>(string sql,object param= null, IDbTransaction? dbTransaction = null);
 
         Task<List<SqlParameter>> ExecuteStoreProcedureWithOutput(string storeProcedureName, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null);
         Task<PaginationSet<TEntity>> GetListPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, string sortColumnName, bool descending = false, IDbTransaction? dbTransaction = null);
@@ -39,7 +39,6 @@ namespace GbLib.DapperOrm.Repositories
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
         void Detach(TEntity entity);
-        IDbConnection GetConnection();
         IDbTransaction GetTransaction();
     }
 }
