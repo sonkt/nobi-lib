@@ -8,6 +8,7 @@
     <Title>GbLib.RabbitMQ</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>This is a library for RabbitMQ</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

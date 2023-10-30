@@ -9,7 +9,7 @@
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>Base of GbLib packages</Description>
     <PackageOutputPath>bin\Release\</PackageOutputPath>
-    <Version>1.0.17</Version>
+    <Version>1.0.19</Version>
   </PropertyGroup>
 
   <ItemGroup>

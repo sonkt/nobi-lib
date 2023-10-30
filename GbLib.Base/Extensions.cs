@@ -56,13 +56,6 @@ namespace GbLib.Base
                 });
             });
 
-            services.AddMvcCore(options =>
-            {
-                options.OutputFormatters.Remove(new XmlDataContractSerializerOutputFormatter());
-                options.UseCentralRoutePrefix(new RouteAttribute("api/v{version:apiVersion}"));
-            })
-            .SetCompatibilityVersion(CompatibilityVersion.Version_3_0);
-
             using (var serviceProvider = services.BuildServiceProvider())
             {
                 var configuration = serviceProvider.GetService<IConfiguration>();
@@ -70,17 +63,6 @@ namespace GbLib.Base
                 configuration.Bind("Kestrel", kestrelOptions);
                 services.Configure<KestrelServerOptions>("Kestrel", configuration);
             }
-            services.AddApiVersioning(x =>
-            {
-                x.ReportApiVersions = true;
-            });
-            //services.AddVersionedApiExplorer(
-            //    options =>
-            //    {
-            //        options.GroupNameFormat = "'v'VVV";
-
-            //        options.SubstituteApiVersionInUrl = true;
-            //    });
 
             services.AddSingleton<ISelfInfoService, SelfInfoService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
@@ -88,7 +70,6 @@ namespace GbLib.Base
             return services
                 .AddMvcCore()
                 .AddDataAnnotations()
-                .AddApiExplorer()
                 .AddAuthorization();
         }
         public static IApplicationBuilder UseAllForwardedHeaders(this IApplicationBuilder builder)

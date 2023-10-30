@@ -8,7 +8,7 @@
     <Title>GbLib.ExcelLib</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>Library to Export Excel</Description>
-    <Version>1.0.1</Version>
+    <Version>1.0.2</Version>
   </PropertyGroup>
 
   <ItemGroup>

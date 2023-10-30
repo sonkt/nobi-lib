@@ -8,6 +8,7 @@
     <Title>GbLib.Redis</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>Library for Redis</Description>
+    <Version>1.0.1</Version>
   </PropertyGroup>
 
   <ItemGroup>

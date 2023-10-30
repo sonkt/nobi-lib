@@ -77,6 +77,11 @@ namespace GbLib.Swagger
             });
 
             services.AddSwaggerGenNewtonsoftSupport();
+            services.AddApiVersioning()
+                .AddApiExplorer(options => {
+                    options.GroupNameFormat = "'v'VVV";
+                    options.SubstituteApiVersionInUrl = true;
+                });
             return services;
         }
 
