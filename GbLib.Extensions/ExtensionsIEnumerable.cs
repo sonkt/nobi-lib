@@ -172,7 +172,7 @@
                     values.Add(new MapDataConfig
                     {
                         ColumnName = headerNames[i],
-                        Value = (value != null) ? value.ToString() : string.Empty
+                        Value = (value != null) ? value.ToString()?.Trim() : string.Empty
                     });
                 }
                 var item = CreateNewIntanceByProperties<T>(values, properties);

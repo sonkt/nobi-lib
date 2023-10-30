@@ -182,9 +182,9 @@ namespace GbLib.ExcelLib
                         numberRowOfHeader = numberHeaderRowOfCol;
                     }
                     var numberFooterRowOfCol = col.Footer?.Count ?? 0;
-                    if (numberHeaderRowOfCol > numberRowOfFooter)
+                    if (numberFooterRowOfCol > numberRowOfFooter)
                     {
-                        numberRowOfFooter = numberHeaderRowOfCol;
+                        numberRowOfFooter = numberFooterRowOfCol;
                     }
                 }
 

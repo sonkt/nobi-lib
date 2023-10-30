@@ -179,76 +179,9 @@ namespace GbLib.DapperOrm.Services
             return _repository.CountAsync(predicate, dbTransaction);
         }
 
-        public virtual async Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight = 40, IDbTransaction? dbTransaction = null)
+        public virtual Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction)
         {
-            if (listData == null)
-            {
-                var dicSort = new Dictionary<string, bool>();
-                dicSort.Add("CreatedDate", true);
-                var dataPaged = await GetListPagedAsync(1, int.MaxValue, m => m.CreatedDate > DateTimeHelper.MinSystemDate, dicSort, dbTransaction);
-                if (dataPaged.TotalCount > 0)
-                {
-                    listData = dataPaged.Items.ToList<object>();
-                }
-                else
-                {
-                    return "";
-                }
-            };
-            var listGridColumns = new List<ExcelGridColumn>();
-            if (listColumns == null || listColumns.Count == 0)
-            {
-                listGridColumns = GetExcelGridColumn(listData.FirstOrDefault());
-            }
-            else
-            {
-                listGridColumns = GetExcelGridColumn(listColumns);
-            }
-
-            ExportExcelConfiguration option = new ExportExcelConfiguration();
-
-            var titleContent = (IExcelTextSection)(new ExcelSectionBuilder<IExcelTextSection>())
-               .SetStartColumn(1)
-               .SetCollection(new List<object> { reportTitle })
-               .Build;
-            titleContent.SetColumnSpan((int)listGridColumns.Count);
-            titleContent.SetDataFormat(new ExcelCellFormat
-            {
-                FontName = "Times New Roman",
-                TextAlignment = ExcelHorizontalAlignment.CenterContinuous,
-                FontSize = 20,
-                IsBold = true,
-                TextColor = Color.Black,
-                RowHeight = titleRowHeight
-            });
-
-            var subTitleContent = (IExcelTextSection)(new ExcelSectionBuilder<IExcelTextSection>())
-                .SetStartColumn(1)
-                .SetCollection(new List<object> { $"Ngày báo cáo:{DateTime.Now.ToString("dd/MM/yyyy")}" })
-                .Build;
-            subTitleContent.SetColumnSpan((int)listGridColumns.Count);
-            subTitleContent.SetDataFormat(new ExcelCellFormat
-            {
-                FontSize = 12,
-                IsItalic = true,
-                TextAlignment = ExcelHorizontalAlignment.CenterContinuous,
-                TextVerticalAlignment = ExcelVerticalAlignment.Center,
-                IsWrapText = true
-            });
-
-            var bodyContent = (IExcelGridSection)(new ExcelSectionBuilder<IExcelGridSection>())
-               .SetStartColumn(1)
-               .SetMarginTop(2)
-               .SetCollection(listData.ToList()).Build;
-            bodyContent.SetColumns(listGridColumns);
-
-            option.Sections.Add((ExcelTextSection)titleContent);
-            option.Sections.Add((ExcelTextSection)subTitleContent);
-            option.Sections.Add((ExcelGridSection)bodyContent);
-
-            ExcelService extension = new ExcelService(option);
-            var fileUrl = await extension.ExportExcel();
-            return fileUrl;
+            return ExportExcel(listData, listColumns, reportTitle, titleRowHeight, dbTransaction, false);
         }
         public List<ExcelGridColumn> GetExcelGridColumn(List<ExcelColumnModel> listColumns, bool listHasIndexColumn = false)
         {
@@ -466,6 +399,98 @@ namespace GbLib.DapperOrm.Services
         public IDbTransaction GetDbTransaction()
         {
             return _repository.GetTransaction();
+        }
+
+        public virtual async Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction, bool hasIndexColumn)
+        {
+            if (listData == null)
+            {
+                var dicSort = new Dictionary<string, bool>();
+                dicSort.Add("CreatedDate", true);
+                var dataPaged = await GetListPagedAsync(1, int.MaxValue, m => m.CreatedDate > DateTimeHelper.MinSystemDate, dicSort, dbTransaction);
+                if (dataPaged.TotalCount > 0)
+                {
+                    listData = dataPaged.Items.ToList<object>();
+                }
+                else
+                {
+                    return "";
+                }
+            };
+            var listGridColumns = new List<ExcelGridColumn>();
+            if (listColumns == null || listColumns.Count == 0)
+            {
+                listGridColumns = GetExcelGridColumn(listData.FirstOrDefault(),hasIndexColumn);
+            }
+            else
+            {
+                listGridColumns = GetExcelGridColumn(listColumns,hasIndexColumn);
+            }
+
+            ExportExcelConfiguration option = new ExportExcelConfiguration();
+
+            var titleContent = (IExcelTextSection)(new ExcelSectionBuilder<IExcelTextSection>())
+               .SetStartColumn(1)
+               .SetCollection(new List<object> { reportTitle })
+               .Build;
+            titleContent.SetColumnSpan((int)listGridColumns.Count);
+            titleContent.SetDataFormat(new ExcelCellFormat
+            {
+                FontName = "Times New Roman",
+                TextAlignment = ExcelHorizontalAlignment.CenterContinuous,
+                FontSize = 20,
+                IsBold = true,
+                TextColor = Color.Black,
+                RowHeight = titleRowHeight
+            });
+
+            var subTitleContent = (IExcelTextSection)(new ExcelSectionBuilder<IExcelTextSection>())
+                .SetStartColumn(1)
+                .SetCollection(new List<object> { $"Ngày báo cáo:{DateTime.Now.ToString("dd/MM/yyyy")}" })
+                .Build;
+            subTitleContent.SetColumnSpan((int)listGridColumns.Count);
+            subTitleContent.SetDataFormat(new ExcelCellFormat
+            {
+                FontSize = 12,
+                IsItalic = true,
+                TextAlignment = ExcelHorizontalAlignment.CenterContinuous,
+                TextVerticalAlignment = ExcelVerticalAlignment.Center,
+                IsWrapText = true
+            });
+
+            var bodyContent = (IExcelGridSection)(new ExcelSectionBuilder<IExcelGridSection>())
+               .SetStartColumn(1)
+               .SetMarginTop(2)
+               .SetCollection(listData.ToList()).Build;
+            bodyContent.SetColumns(listGridColumns);
+
+            option.Sections.Add((ExcelTextSection)titleContent);
+            option.Sections.Add((ExcelTextSection)subTitleContent);
+            option.Sections.Add((ExcelGridSection)bodyContent);
+
+            ExcelService extension = new ExcelService(option);
+            var fileUrl = await extension.ExportExcel();
+            return fileUrl;
+        }
+
+        public virtual Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, IDbTransaction? dbTransaction, bool hasIndexColumn)
+        {
+            return ExportExcel(listData, listColumns, reportTitle, 40, dbTransaction, hasIndexColumn);
+        }
+
+        public virtual Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, bool hasIndexColumn)
+        {
+            return ExportExcel(listData, listColumns, reportTitle, titleRowHeight, null, hasIndexColumn);
+        }
+
+        public virtual Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, bool hasIndexColumn)
+        {
+            return ExportExcel(listData,listColumns,reportTitle,40,null, hasIndexColumn);
+        }
+
+        public Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle)
+        {
+            return ExportExcel(listData, listColumns, reportTitle, 40, null, false);
         }
         #endregion Methods
 
