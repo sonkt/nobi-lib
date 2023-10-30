@@ -68,7 +68,11 @@ namespace GbLib.Base
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
 
             return services
-                .AddMvcCore()
+                .AddMvcCore(options =>
+                {
+                    options.OutputFormatters.Remove(new XmlDataContractSerializerOutputFormatter());
+                    options.UseCentralRoutePrefix(new RouteAttribute("api/v{version:apiVersion}"));
+                })
                 .AddDataAnnotations()
                 .AddAuthorization();
         }
