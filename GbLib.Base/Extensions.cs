@@ -74,13 +74,13 @@ namespace GbLib.Base
             {
                 x.ReportApiVersions = true;
             });
-            services.AddVersionedApiExplorer(
-                options =>
-                {
-                    options.GroupNameFormat = "'v'VVV";
+            //services.AddVersionedApiExplorer(
+            //    options =>
+            //    {
+            //        options.GroupNameFormat = "'v'VVV";
 
-                    options.SubstituteApiVersionInUrl = true;
-                });
+            //        options.SubstituteApiVersionInUrl = true;
+            //    });
 
             services.AddSingleton<ISelfInfoService, SelfInfoService>();
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
