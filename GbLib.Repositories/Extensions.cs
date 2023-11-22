@@ -1,16 +1,15 @@
 ﻿using GbLib.Entities.Context;
-using MicroOrm.Dapper.Repositories;
 using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace GbLib.Services
+namespace GbLib.Repositories
 {
     public static class Extensions
     {
-        public static IServiceCollection AddDapperOrm<TDbContext>(this IServiceCollection services) where TDbContext : DbContext
+        public static IServiceCollection AddDapperOrmRepository<TDbContext>(this IServiceCollection services) where TDbContext : DbContext
         {
             var svcProvider = services.BuildServiceProvider();
             var config = svcProvider.GetRequiredService<IConfiguration>();
@@ -27,7 +26,7 @@ namespace GbLib.Services
             }
             services.AddScoped(typeof(ISqlGenerator<>), typeof(SqlGenerator<>));
             services.AddScoped<IDbConnectionFactory, DbConnectionFactory>(factory => new DbConnectionFactory(connectionString, SqlProvider.MSSQL));
-            services.AddScoped(typeof(IDapperRepository<>), typeof(DapperRepository<>));
+            services.AddScoped(typeof(IDapperOrmRepository<,>), typeof(DapperOrmRepository<,>));
             services.AddDbContext<TDbContext>((sp, o) =>
             {
                 var connectionString = Environment.GetEnvironmentVariable("CONN_STR");

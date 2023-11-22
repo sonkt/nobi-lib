@@ -9,6 +9,9 @@ namespace GbLib.Services
     public interface IBaseService<TEntity, TKey> where TEntity : class, IEntityBase<TKey>
     {
         #region Methods
+        Task<int> ExecuteAsync(string sql, object? param = null, IDbTransaction? dbTransaction = null);
+
+        Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null, IDbTransaction? dbTransaction = null);
 
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
@@ -26,9 +29,9 @@ namespace GbLib.Services
 
         int Count(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
-        Task<PaginationSet<TEntity>> FillPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, string sortColumnName, bool descending = false, IDbTransaction? dbTransaction = null);
+        Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, string sortColumnName, bool descending = false, IDbTransaction? dbTransaction = null);
 
-        Task<PaginationSet<TEntity>> FillPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool> sortList, IDbTransaction? dbTransaction = null);
+        Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool> sortList, IDbTransaction? dbTransaction = null);
 
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction, bool hasIndexColumn);
 

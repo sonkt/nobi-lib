@@ -1,8 +1,9 @@
-﻿using GbLib.Base;
+﻿using Dapper;
+using GbLib.Base;
 using GbLib.Base.Helpers;
 using GbLib.Entities;
 using GbLib.ExcelLib;
-using MicroOrm.Dapper.Repositories;
+using GbLib.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MoreLinq;
 using OfficeOpenXml.Style;
@@ -17,13 +18,13 @@ namespace GbLib.Services
     {
         #region Fields
 
-        private readonly IDapperRepository<TEntity> _repository;
+        private readonly IDapperOrmRepository<TEntity,TKey> _repository;
 
         #endregion Fields
 
         #region Constructors
 
-        protected BaseService(IDapperRepository<TEntity> repository)
+        protected BaseService(IDapperOrmRepository<TEntity, TKey> repository)
         {
             _repository = repository;
         }
@@ -85,7 +86,7 @@ namespace GbLib.Services
             return _repository.Connection.BeginTransaction();
         }
 
-        public virtual async Task<PaginationSet<TEntity>> FillPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, string sortColumnName, bool descending = false, IDbTransaction? dbTransaction = null)
+        public virtual async Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, string sortColumnName, bool descending = false, IDbTransaction? dbTransaction = null)
         {
             if (pageNumber <= 0)
             {
@@ -101,7 +102,7 @@ namespace GbLib.Services
             };
         }
 
-        public virtual async Task<PaginationSet<TEntity>> FillPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool> sortList, IDbTransaction? dbTransaction = null)
+        public virtual async Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool> sortList, IDbTransaction? dbTransaction = null)
         {
             if (sortList == null || sortList.Count == 0)
             {
@@ -360,7 +361,7 @@ namespace GbLib.Services
             {
                 var dicSort = new Dictionary<string, bool>();
                 dicSort.Add("CreatedDate", true);
-                var dataPaged = await FillPagedAsync(1, int.MaxValue, m => m.CreatedDate > DateTimeHelper.MinSystemDate, dicSort, dbTransaction);
+                var dataPaged = await FindPagedAsync(1, int.MaxValue, m => m.CreatedDate > DateTimeHelper.MinSystemDate, dicSort, dbTransaction);
                 if (dataPaged.TotalCount > 0)
                 {
                     listData = dataPaged.Items.ToList<object>();
@@ -654,6 +655,16 @@ namespace GbLib.Services
         public Task<bool> BulkUpdateAsync(IEnumerable<TEntity> instances, IDbTransaction? transaction, CancellationToken cancellationToken)
         {
             return _repository.BulkUpdateAsync(instances, transaction, cancellationToken);
+        }
+
+        public Task<int> ExecuteAsync(string sql, object? param = null, IDbTransaction? dbTransaction = null)
+        {
+            return _repository.Connection.ExecuteAsync(sql, param, dbTransaction);
+        }
+
+        public Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null, IDbTransaction? dbTransaction = null)
+        {
+            return _repository.Connection.QueryAsync<T>(sql, param, dbTransaction);
         }
 
         #endregion Methods
