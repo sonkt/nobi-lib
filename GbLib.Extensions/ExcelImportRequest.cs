@@ -22,16 +22,19 @@ namespace GbLib.Extensions
     {
         private ExcelImportRequest objBuilder = new ExcelImportRequest();
         public ExcelImportRequest Build => objBuilder;
+
         public ExcelImportRequestBuilder SetStartRow(int startRow)
         {
             objBuilder.StartRow = startRow;
             return this;
         }
+
         public ExcelImportRequestBuilder SetWorkSheetIndex(int index)
         {
             objBuilder.WorkSheet = index;
             return this;
         }
+
         public ExcelImportRequestBuilder SetHeaderColumn(string headerNames)
         {
             string[] myArray = headerNames.Split(',');
@@ -39,11 +42,13 @@ namespace GbLib.Extensions
             objBuilder.HeaderNames = sortProperties;
             return this;
         }
+
         public ExcelImportRequestBuilder SetFile(IFormFile file)
         {
             objBuilder.File = file;
             return this;
         }
+
         public ExcelImportRequestBuilder SetPaddingBottom(int pading)
         {
             objBuilder.PaddingBottom = pading;

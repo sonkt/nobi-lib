@@ -108,6 +108,5 @@ namespace GbLib.Jwt
             }
             return app;
         }
-
     }
 }

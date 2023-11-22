@@ -25,8 +25,8 @@ namespace GbLib.ExcelLib
             {
                 Build = new ExcelTextSection();
             }
-
         }
+
         public ExcelSectionBuilder<T> SetMarginTop(int value)
         {
             Build.MarginTop = value;
@@ -50,17 +50,17 @@ namespace GbLib.ExcelLib
             Build.BorderColor = color;
             return this;
         }
+
         public ExcelSectionBuilder<T> SetStartColumn(int startIndex)
         {
             Build.StartColumnOfContent = startIndex;
             return this;
         }
+
         public ExcelSectionBuilder<T> SetStartRows(int startIndex)
         {
             Build.StartRowOfContent = startIndex;
             return this;
         }
-
     }
-
 }

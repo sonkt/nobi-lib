@@ -4,6 +4,7 @@
     {
         public int ColumnSpan { get; set; }
         public ExcelCellFormat DataFormat { get; set; }
+
         public IExcelTextSection SetColumnSpan(int colspan)
         {
             ColumnSpan = colspan;

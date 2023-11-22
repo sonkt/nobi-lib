@@ -39,9 +39,9 @@ namespace GbLib.Extensions
                 throw;
             }
         }
+
         public static Dictionary<string, string> ReadNode(this string path, string NodePath)
         {
-
             try
             {
                 Dictionary<string, string> dicName = new Dictionary<string, string>();
@@ -65,6 +65,7 @@ namespace GbLib.Extensions
                 throw;
             }
         }
+
         public static Dictionary<string, string> ReadChildrenNode(XmlNode xmlNode)
         {
             try
@@ -87,6 +88,7 @@ namespace GbLib.Extensions
                 throw;
             }
         }
+
         public static Dictionary<string, string> ReadChildrenNode(XmlNode xmlNode, string nodeName_non_read)
         {
             try
@@ -112,10 +114,11 @@ namespace GbLib.Extensions
                 throw;
             }
         }
+
         private static T CreateObject<T>(Dictionary<string, string> dicValue, List<PropertyInfo> properties, List<Column> configurationColumnName)
         {
             var obj = (T)Activator.CreateInstance(typeof(T));
-            int n = 0;                            // step can be error 
+            int n = 0;                            // step can be error
             string columnError = string.Empty;    // column can be error
 
             try
@@ -126,14 +129,14 @@ namespace GbLib.Extensions
                     var value = dicValue.FirstOrDefault(x => x.Key == conf.XmlName);
                     string temp = value.Value;
 
-                    // next column 
+                    // next column
                     if (temp == string.Empty || temp == null || temp == "|")
                     {
                         n++;
                         continue;
                     }
 
-                    // if it's nullable then handle: 
+                    // if it's nullable then handle:
                     if (property.PropertyType.IsGenericType && property.PropertyType.GetGenericTypeDefinition() == typeof(Nullable<>))
                     {
                         Type underlyingType = Nullable.GetUnderlyingType(property.PropertyType);

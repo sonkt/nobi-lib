@@ -39,6 +39,7 @@ namespace GbLib.Base.Helpers
 
         #endregion Methods
     }
+
     public static class TypeHelper
     {
         #region Methods
@@ -317,6 +318,7 @@ namespace GbLib.Base.Helpers
         {
             return Convert.ToInt32(o);
         }
+
         public static Type GetItemTypeOfList(IList<object> myList)
         {
             if (myList == null || myList.Count == 0)
@@ -325,6 +327,7 @@ namespace GbLib.Base.Helpers
             }
             return myList[0].GetType();
         }
+
         #endregion Methods
     }
 }

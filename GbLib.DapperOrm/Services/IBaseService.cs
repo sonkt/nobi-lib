@@ -21,7 +21,9 @@ namespace GbLib.DapperOrm.Services
         Task<PaginationSet<TEntity>> GetListPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool> sortList, IDbTransaction? dbTransaction = null);
 
         Task<TEntity> GetObjectById(TKey id, IDbTransaction? dbTransaction = null);
+
         Task<TEntity> GetObjectByCondition(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
+
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
         Task<bool> InsertAsync(List<TEntity> listData, IDbTransaction? dbTransaction = null);
@@ -33,12 +35,19 @@ namespace GbLib.DapperOrm.Services
         Task<bool> UpdateAsync(TEntity data, IDbTransaction? dbTransaction = null);
 
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction, bool hasIndexColumn);
+
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, IDbTransaction? dbTransaction, bool hasIndexColumn);
+
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, bool hasIndexColumn);
+
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction);
+
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, bool hasIndexColumn);
+
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle);
+
         List<ExcelGridColumn> GetExcelGridColumn(List<ExcelColumnModel> listColumns, bool listHasIndexColumn = false);
+
         List<ExcelGridColumn> GetExcelGridColumn(object entity, bool listHasIndexColumn = false);
 
         IDbTransaction GetDbTransaction();

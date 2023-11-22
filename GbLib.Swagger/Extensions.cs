@@ -1,6 +1,5 @@
 ﻿using Asp.Versioning.ApiExplorer;
 using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -78,7 +77,8 @@ namespace GbLib.Swagger
 
             services.AddSwaggerGenNewtonsoftSupport();
             services.AddApiVersioning()
-                .AddApiExplorer(options => {
+                .AddApiExplorer(options =>
+                {
                     options.GroupNameFormat = "'v'VVV";
                     options.SubstituteApiVersionInUrl = true;
                 });
@@ -112,6 +112,5 @@ namespace GbLib.Swagger
                 });
             }
         }
-
     }
 }

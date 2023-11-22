@@ -1,7 +1,7 @@
 ﻿namespace GbLib.Extensions
 {
-    using MoreLinq;
     using GbLib.Extensions;
+    using MoreLinq;
     using OfficeOpenXml;
     using System;
     using System.Collections.Generic;
@@ -116,7 +116,7 @@
             return sum.DivideBy(sumWeights);
         }
 
-        // import Excel 
+        // import Excel
         public static List<T> ExcelFileToList<T>(this ExcelImportRequest request)
         {
             try
@@ -158,6 +158,7 @@
                 return default;
             }
         }
+
         private static List<T> ReadData<T>(ExcelWorksheet worksheet, int startRow, int endRow, List<string> headerNames)
         {
             Type objectType = typeof(T);
@@ -180,6 +181,7 @@
             }
             return listAnyThing;
         }
+
         private static T CreateNewIntanceByProperties<T>(List<MapDataConfig> data, List<PropertyInfo> properties)
         {
             try
@@ -232,6 +234,7 @@
                 throw;
             }
         }
-        #endregion Metho
+
+        #endregion Methods
     }
 }

@@ -1,10 +1,10 @@
-﻿using Microsoft.Extensions.Logging;
-using GbLib.Base;
+﻿using GbLib.Base;
 using GbLib.Base.Helpers;
 using GbLib.DapperOrm.Context;
 using GbLib.DapperOrm.Entities;
 using GbLib.DapperOrm.Repositories;
 using GbLib.ExcelLib;
+using Microsoft.Extensions.Logging;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Drawing;
@@ -35,7 +35,9 @@ namespace GbLib.DapperOrm.Services
         #endregion Constructors
 
         #region Properties
+
         public abstract int PeriodicSyncCacheTime { get; }
+
         public virtual Expression<Func<TEntity, bool>> SyncCacheConditionPridecate
         {
             get
@@ -106,7 +108,6 @@ namespace GbLib.DapperOrm.Services
                 sortList.Add("CreatedDate", true);
             }
             return _repository.GetListPagedAsync(pageNumber, pageSize, predicate, sortList, dbTransaction);
-
         }
 
         public virtual Task<bool> InsertAsync(List<TEntity> listData, IDbTransaction? dbTransaction = null)
@@ -183,6 +184,7 @@ namespace GbLib.DapperOrm.Services
         {
             return ExportExcel(listData, listColumns, reportTitle, titleRowHeight, dbTransaction, false);
         }
+
         public List<ExcelGridColumn> GetExcelGridColumn(List<ExcelColumnModel> listColumns, bool listHasIndexColumn = false)
         {
             var listGridColumns = new List<ExcelGridColumn>();
@@ -325,6 +327,7 @@ namespace GbLib.DapperOrm.Services
             }
             return listGridColumns;
         }
+
         public List<ExcelGridColumn> GetExcelGridColumn(object entity, bool listHasIndexColumn = false)
         {
             if (entity == null) return new List<ExcelGridColumn> { };
@@ -377,6 +380,7 @@ namespace GbLib.DapperOrm.Services
             }
             return listGridColumns;
         }
+
         private ExcelHorizontalAlignment GetExcelAlign(string align)
         {
             if (!string.IsNullOrEmpty(align))
@@ -386,16 +390,20 @@ namespace GbLib.DapperOrm.Services
                 {
                     case "center":
                         return ExcelHorizontalAlignment.Center;
+
                     case "left":
                         return ExcelHorizontalAlignment.Left;
+
                     case "right":
                         return ExcelHorizontalAlignment.Right;
+
                     case "justify":
                         return ExcelHorizontalAlignment.Justify;
                 }
             }
             return ExcelHorizontalAlignment.Left;
         }
+
         public IDbTransaction GetDbTransaction()
         {
             return _repository.GetTransaction();
@@ -420,11 +428,11 @@ namespace GbLib.DapperOrm.Services
             var listGridColumns = new List<ExcelGridColumn>();
             if (listColumns == null || listColumns.Count == 0)
             {
-                listGridColumns = GetExcelGridColumn(listData.FirstOrDefault(),hasIndexColumn);
+                listGridColumns = GetExcelGridColumn(listData.FirstOrDefault(), hasIndexColumn);
             }
             else
             {
-                listGridColumns = GetExcelGridColumn(listColumns,hasIndexColumn);
+                listGridColumns = GetExcelGridColumn(listColumns, hasIndexColumn);
             }
 
             ExportExcelConfiguration option = new ExportExcelConfiguration();
@@ -485,14 +493,14 @@ namespace GbLib.DapperOrm.Services
 
         public virtual Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, bool hasIndexColumn)
         {
-            return ExportExcel(listData,listColumns,reportTitle,40,null, hasIndexColumn);
+            return ExportExcel(listData, listColumns, reportTitle, 40, null, hasIndexColumn);
         }
 
         public Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle)
         {
             return ExportExcel(listData, listColumns, reportTitle, 40, null, false);
         }
-        #endregion Methods
 
+        #endregion Methods
     }
 }

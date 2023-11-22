@@ -19,6 +19,7 @@
 
         #endregion Methods
     }
+
     public abstract class Converter
     {
         #region Fields

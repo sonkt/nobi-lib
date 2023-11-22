@@ -1,11 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc.Routing;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.AspNetCore.Mvc.Routing;
 
 namespace GbLib.Base.Mvc
 {
@@ -20,6 +15,7 @@ namespace GbLib.Base.Mvc
 
         #endregion Methods
     }
+
     public class RouteConvention : IApplicationModelConvention
     {
         #region Fields

@@ -8,12 +8,7 @@ using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GbLib.Base
 {
@@ -76,13 +71,14 @@ namespace GbLib.Base
                 .AddDataAnnotations()
                 .AddAuthorization();
         }
+
         public static IApplicationBuilder UseAllForwardedHeaders(this IApplicationBuilder builder)
        => builder.UseForwardedHeaders(new ForwardedHeadersOptions
        {
            ForwardedHeaders = ForwardedHeaders.All
        });
+
         public static IApplicationBuilder UseExceptionMiddleware(this IApplicationBuilder builder)
         => builder.UseMiddleware<ErrorHandlerMiddleware>();
     }
-
 }

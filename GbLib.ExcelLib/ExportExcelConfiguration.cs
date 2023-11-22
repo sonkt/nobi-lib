@@ -2,7 +2,6 @@
 
 namespace GbLib.ExcelLib
 {
-
     public class ExportExcelConfiguration
     {
         public IList<ExcelSection> Sections { get; set; } = new List<ExcelSection>();
@@ -16,7 +15,6 @@ namespace GbLib.ExcelLib
         public int FitToWidth { get; set; } = 1;
         public int FitToHeight { get; set; } = 0;
         public bool HorizontalCentered { get; set; } = true;
-
 
         public ExportExcelConfiguration()
         { }

@@ -1,10 +1,5 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GbLib.Base
 {
@@ -19,6 +14,7 @@ namespace GbLib.Base
 
         #endregion Methods
     }
+
     public class OptionsMethodMiddleware
     {
         #region Fields
@@ -60,5 +56,4 @@ namespace GbLib.Base
 
         #endregion Methods
     }
-
 }

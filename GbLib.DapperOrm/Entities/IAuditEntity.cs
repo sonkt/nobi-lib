@@ -17,9 +17,11 @@
 
         #endregion Properties
     }
+
     public interface IAuditEntity<TKey> : IAuditEntity, IDeleteEntity<TKey>
     {
     }
+
     public interface IDeleteEntity<TKey> : IDeleteEntity, IEntityBase<TKey>
     {
     }

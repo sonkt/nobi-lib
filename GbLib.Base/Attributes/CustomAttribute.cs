@@ -18,6 +18,7 @@
 
         #endregion Properties
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class DisplayNameAttribute : Attribute
     {
@@ -38,6 +39,7 @@
 
         #endregion Properties
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class EditableAttribute : Attribute
     {
@@ -56,26 +58,32 @@
 
         #endregion Properties
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class IgnoreInsertAttribute : Attribute
     {
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class IgnoreSelectAttribute : Attribute
     {
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class IgnoreUpdateAttribute : Attribute
     {
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class KeyAttribute : Attribute
     {
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class NotMappedAttribute : Attribute
     {
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class ReadOnlyAttribute : Attribute
     {
@@ -94,10 +102,12 @@
 
         #endregion Properties
     }
+
     [AttributeUsage(AttributeTargets.Property)]
     public class RequiredAttribute : Attribute
     {
     }
+
     [AttributeUsage(AttributeTargets.Class)]
     public class TableAttribute : Attribute
     {

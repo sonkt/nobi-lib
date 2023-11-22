@@ -112,6 +112,7 @@
                 return arrName.Last();
             return name;
         }
+
         /// <summary>
         /// Get First Name From StringName
         /// </summary>
@@ -119,7 +120,6 @@
         /// <returns></returns>
         public static string FirstName(this string fullName)
         {
-
             string name = fullName.Trim();
             var arrName = fullName.Split(' ');
             if (arrName.Count() >= 2)
@@ -129,9 +129,8 @@
                 return firstName;
             }
             return name;
-
-
         }
+
         /// <summary>
         /// Compate String to Sorting by culture vi-vn
         /// </summary>
@@ -177,7 +176,6 @@
                 Console.WriteLine(ex.Message);
                 throw;
             }
-
         }
 
         #endregion Methods

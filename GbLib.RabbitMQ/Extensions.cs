@@ -40,6 +40,7 @@ namespace GbLib.RabbitMQ
                 return services;
             }
         }
+
         public static void BuildContainerRabbitMqEventBus(this ContainerBuilder builder, Assembly assembly = null)
         {
             builder.RegisterType<RabbitMqPublisher>().As<IRabbitMqPublisher>().OnActivating(e => e.Instance.Init()).SingleInstance();
@@ -48,6 +49,5 @@ namespace GbLib.RabbitMQ
 
         public static IRabbitMqSubscriber RabbitMqEventBusSubcriber(this IApplicationBuilder app)
            => new RabbitMqSubscriber(app);
-
     }
 }

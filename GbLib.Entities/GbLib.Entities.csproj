@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net7.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>GbLib.Entities</Title>
+    <Version>1.0.0</Version>
+    <Authors>$(AssemblyName)Sơn Khiếu &amp; Contributors</Authors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="MicroOrm.Dapper.Repositories" Version="1.25.1" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GbLib.Base\GbLib.Base.csproj" />
+  </ItemGroup>
+
+</Project>

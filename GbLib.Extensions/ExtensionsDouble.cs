@@ -56,14 +56,19 @@
                 {
                     case "hh:mm:ss": // 20:15:00
                         return (!string.IsNullOrEmpty(rhours) ? (rhours + ":") : "") + rminutes + ":" + rseconds;
+
                     case "hh:mm": // 20:15
                         return (!string.IsNullOrEmpty(rhours) ? (rhours + ":") : "") + rminutes;
+
                     case "hh#mm#ss": // 20 giờ 15 phút 00 giây
                         return (!string.IsNullOrEmpty(rhours) ? (rhours + " giờ ") : "") + rminutes + " phút " + rseconds + " giây";
+
                     case "hh#mm": // 20 giờ 15 phút
                         return (!string.IsNullOrEmpty(rhours) ? (rhours + " giờ ") : "") + rminutes + " phút";
+
                     case "hh.mm": // 20.25 giờ
                         return $"{string.Format(new System.Globalization.CultureInfo("vi-VN"), "{0:0.##}", hours)} giờ";
+
                     default:
                         return value + " phút";
                 }

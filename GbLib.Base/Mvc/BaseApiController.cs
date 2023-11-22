@@ -3,12 +3,6 @@ using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using OpenTracing;
-using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GbLib.Base.Mvc
 {
@@ -52,7 +46,6 @@ namespace GbLib.Base.Mvc
                 Console.WriteLine("Có lỗi trong quá trình lấy file từ URL", ex.StackTrace);
                 return null;
             }
-
         }
 
         #endregion Constructors

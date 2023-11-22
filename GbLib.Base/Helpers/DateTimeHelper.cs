@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Components.Forms;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace GbLib.Base.Helpers
 {
@@ -263,6 +262,7 @@ namespace GbLib.Base.Helpers
             var timeInTicks = intDate * TimeSpan.TicksPerSecond;
             return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddTicks(timeInTicks);
         }
+
         public static DateTime ToLocalDateTime(this long unixDate, bool inTick = false)
         {
             if (inTick)
@@ -275,23 +275,27 @@ namespace GbLib.Base.Helpers
                 return new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc).AddSeconds(unixDate).ToLocalTime();
             }
         }
+
         public static long ToEpochFromDateTime(this DateTime date)
         {
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
             TimeSpan diff = date.ToUniversalTime() - origin;
             return diff.Ticks / TimeSpan.TicksPerSecond;
         }
+
         public static DateTime ConvertToTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
         {
             var time = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
             return TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
         }
+
         public static DateTime ConvertFromTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
         {
             var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
             return TimeZoneInfo.ConvertTimeToUtc(dateTime, timeZone);
         }
+
         #endregion Methods
     }
 }

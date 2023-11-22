@@ -1,10 +1,10 @@
-﻿using MicroOrm.Dapper.Repositories.Config;
+﻿using GbLib.DapperOrm.Context;
+using GbLib.DapperOrm.Repositories;
+using MicroOrm.Dapper.Repositories.Config;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using GbLib.DapperOrm.Context;
-using GbLib.DapperOrm.Repositories;
-using Microsoft.EntityFrameworkCore;
 
 namespace GbLib.DapperOrm
 {

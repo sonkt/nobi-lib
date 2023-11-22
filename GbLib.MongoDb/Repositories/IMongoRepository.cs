@@ -1,7 +1,7 @@
-﻿using MongoDB.Bson;
-using MongoDB.Driver;
-using GbLib.Base;
+﻿using GbLib.Base;
 using GbLib.MongoDb.Entities;
+using MongoDB.Bson;
+using MongoDB.Driver;
 
 namespace GbLib.MongoDb.Repositories
 {

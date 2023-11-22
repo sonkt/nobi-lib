@@ -49,7 +49,7 @@ namespace GbLib.Base.Helpers
             return distanceTotal;
         }
 
-        static bool isOriginLocation(double? lat, double? lng)
+        private static bool isOriginLocation(double? lat, double? lng)
         {
             if (lat == null || lng == null)
             {

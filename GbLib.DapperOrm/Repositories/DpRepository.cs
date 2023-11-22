@@ -1,11 +1,12 @@
 ﻿using Dapper;
-using MicroOrm.Dapper.Repositories;
-using MicroOrm.Dapper.Repositories.SqlGenerator;
-using Microsoft.Data.SqlClient;
 using GbLib.Base;
 using GbLib.Base.Helpers;
 using GbLib.DapperOrm.Context;
 using GbLib.DapperOrm.Entities;
+using MicroOrm.Dapper.Repositories;
+using MicroOrm.Dapper.Repositories.SqlGenerator;
+using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
+using Microsoft.Data.SqlClient;
 using System.Collections;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
@@ -18,20 +19,24 @@ namespace GbLib.DapperOrm.Repositories
         where TEntity : class, IAuditEntity<TId>
     {
         public bool UseTVP { get; set; } = false;
+
         //private readonly IDbConnection _connection;
         private readonly IDomainEventDispatcher _domainEventDispatcher;
+
         private readonly IDbConnectionFactory _dbConnectionFactory;
         private IDbTransaction _dbTransaction;
+
         public DpRepository(IDbConnectionFactory dbConnectionFactory, ISqlGenerator<TEntity> generator, IDomainEventDispatcher domainEventDispatcher) : base(dbConnectionFactory.OpenDbConnection(), generator)
         {
             _dbConnectionFactory = dbConnectionFactory;
             _domainEventDispatcher = domainEventDispatcher;
         }
-      
+
         public IDbTransaction GetTransaction()
         {
             return _dbConnectionFactory.GetDbTransaction();
         }
+
         public Task<PaginationSet<TEntity>> GetListPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>> predicate, string sortColumnName, bool descending = false, IDbTransaction? dbTransaction = null)
         {
             var sortList = new Dictionary<string, bool>();
@@ -72,6 +77,7 @@ namespace GbLib.DapperOrm.Repositories
                 TotalCount = count
             };
         }
+
         private string ReGenerateQuery(SqlQuery queryResult, string sqlQuery)
         {
             if (queryResult.Param != null)
@@ -461,12 +467,11 @@ namespace GbLib.DapperOrm.Repositories
         /// <param name="entity"></param>
         public void Detach(TEntity entity)
         {
-
         }
 
         public IEnumerable<TEntity> GetObjects(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
-            return base.FindAll(predicate, dbTransaction);
+            return base.SetOrderBy(OrderInfo.SortDirection.DESC, x => x.Id).FindAll(predicate, dbTransaction);
         }
 
         public Task<TEntity> GetObject(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
@@ -627,10 +632,9 @@ namespace GbLib.DapperOrm.Repositories
             }
         }
 
-        public async Task<IEnumerable<T>> QueryAsync<T>(string sql,object param = null, IDbTransaction? dbTransaction = null)
+        public async Task<IEnumerable<T>> QueryAsync<T>(string sql, object param = null, IDbTransaction? dbTransaction = null)
         {
-            return await Connection.QueryAsync<T>(sql,param, dbTransaction);
-
+            return await Connection.QueryAsync<T>(sql, param, dbTransaction);
         }
     }
 }

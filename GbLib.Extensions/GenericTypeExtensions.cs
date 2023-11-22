@@ -32,6 +32,7 @@
 
             return typeName;
         }
+
         public static string ToJsonString<T>(this T value)
         {
             return value == null ? string.Empty : JsonSerializer.Serialize(value, JsonSerializerOptions.Default);

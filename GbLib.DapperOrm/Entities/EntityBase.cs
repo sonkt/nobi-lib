@@ -1,17 +1,13 @@
 ﻿using GbLib.Base;
 using GbLib.Base.Attributes;
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace GbLib.DapperOrm.Entities
 {
     public abstract class AuditEntity<TKey> : DeleteEntity<TKey>, IAuditEntity<TKey>
     {
         #region Properties
+
         [IgnoreUpdate]
         public DateTime CreatedDate { get; set; }
 
@@ -43,6 +39,7 @@ namespace GbLib.DapperOrm.Entities
 
         #endregion Properties
     }
+
     public abstract class EntityBase<TKey> : IEntityBase<TKey>, IDisposable
     {
         #region Fields

@@ -399,10 +399,9 @@ namespace GbLib.Extensions
             }
         }
 
-
-        /// 
+        ///
         /// Chuyển phần nguyên của số thành chữ
-        /// 
+        ///
         /// Số double cần chuyển thành chữ
         /// Chuỗi kết quả chuyển từ số
         public static string NumberToVietnameseText(double inputNumber, bool suffix = true)
@@ -421,13 +420,11 @@ namespace GbLib.Extensions
                 isNegative = true;
             }
 
-
             int ones, tens, hundreds;
 
             int positionDigit = sNumber.Length;   // last -> first
 
             string result = " ";
-
 
             if (positionDigit == 0)
                 result = unitNumbers[0] + result;
@@ -492,6 +489,7 @@ namespace GbLib.Extensions
             if (isNegative) result = "Âm " + result;
             return result + (suffix ? " đồng chẵn" : "");
         }
+
         #endregion Methods
     }
 }

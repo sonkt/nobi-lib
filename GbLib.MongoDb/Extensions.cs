@@ -1,8 +1,8 @@
-﻿using Microsoft.Extensions.DependencyInjection;
-using MongoDB.Driver;
-using GbLib.MongoDb.Repositories;
-using GbLib.Base;
+﻿using GbLib.Base;
 using GbLib.MongoDb.Context;
+using GbLib.MongoDb.Repositories;
+using Microsoft.Extensions.DependencyInjection;
+using MongoDB.Driver;
 
 namespace GbLib.MongoDb
 {
@@ -55,6 +55,7 @@ namespace GbLib.MongoDb
             services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
             return services;
         }
+
         public static IServiceCollection AddRepositories<T>(this IServiceCollection services) where T : class
         {
             services.Scan(scan => scan

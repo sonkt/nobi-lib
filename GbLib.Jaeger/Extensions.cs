@@ -9,7 +9,6 @@ using Microsoft.Extensions.Logging;
 using OpenTracing;
 using OpenTracing.Contrib.NetCore.Configuration;
 using OpenTracing.Util;
-using System.Diagnostics;
 
 namespace GbLib.Jaeger
 {

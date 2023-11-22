@@ -68,6 +68,7 @@
         public static DateTime Min(params DateTime[] days) => days.Min();
 
         public static DateTime Substract(this DateTime date, TimeSpan span) => date.Add(span.MultiplyBy(-1));
+
         public static DateTime ConvertStringToDateTime(this string strDateTime)
         {
             DateTime dateTime;
@@ -80,7 +81,7 @@
             try
             {
                 TimeSpan thoiGian = endDate - startDate;
-                var totalMinutes = (int)thoiGian.TotalMinutes;  // Số phút 
+                var totalMinutes = (int)thoiGian.TotalMinutes;  // Số phút
                 int hour = totalMinutes / 60;
                 int minute = totalMinutes % 60;
 
@@ -103,7 +104,6 @@
             }
         }
 
-
         public static DateTime ParseDate(this string dateString)
         {
             string strDateTime = dateString.Trim();
@@ -120,7 +120,7 @@
 
         public static DateTime ConvertDateWhenUsingAttendanceExcel(string inputDay, string inputHour)
         {
-            // xử lý ngày 
+            // xử lý ngày
             try
             {
                 string[] arrayDate = inputDay.Split('/');
@@ -140,19 +140,17 @@
                 Console.WriteLine("can't create date");
                 throw;
             }
-
         }
 
         public static DateTime ConvertDateWhenUsingAttendanceExcel(this string inputDay)
         {
-            // xử lý ngày 
+            // xử lý ngày
             try
             {
                 string[] arrayDate = inputDay.Split('/');
                 int year = int.Parse($"20{arrayDate[2]}");
                 int month = int.Parse(arrayDate[0]);
                 int day = int.Parse(arrayDate[1]);
-
 
                 return new DateTime(year, month, day);
             }
@@ -161,13 +159,14 @@
                 Console.WriteLine("can't create date");
                 throw;
             }
-
         }
+
         public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
         {
             int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
             return dt.AddDays(-1 * diff).Date;
         }
+
         public static DateTime EndOfWeek(this DateTime date, DayOfWeek startOfWeek)
         {
             DateTime firstDayInWeek = date.StartOfWeek(startOfWeek);
@@ -178,6 +177,7 @@
         {
             return new DateTime(date.Year, date.Month, 1);
         }
+
         public static DateTime EndOfMonth(this DateTime date)
         {
             var firstDayOfMonth = new DateTime(date.Year, date.Month, 1);
@@ -190,19 +190,23 @@
 
             return new DateTime(date.Year, 3 * currQuarter - 2, 1);
         }
+
         public static DateTime EndOfQuater(this DateTime date)
         {
             int currQuarter = (date.Month - 1) / 3 + 1;
             return new DateTime(date.Year, 3 * currQuarter + 1, 1).AddDays(-1);
         }
+
         public static DateTime StartOfYear(this DateTime date)
         {
             return new DateTime(date.Year, 1, 1);
         }
+
         public static DateTime EndOfYear(this DateTime date)
         {
             return new DateTime(date.Year, 12, 31);
         }
+
         #endregion Methods
     }
 }

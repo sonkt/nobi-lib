@@ -67,7 +67,6 @@ namespace GbLib.DapperOrm.Context
                 if (type == SqlProvider.PostgreSQL)
                     return GetDbProviderFactory("Npgsql.NpgsqlFactory", "Npgsql");
 
-
                 throw new NotSupportedException(string.Format("Unsupported Provider Factory", type.ToString()));
             }
 
@@ -104,6 +103,7 @@ namespace GbLib.DapperOrm.Context
             }
 
             #region Reflection Utilities
+
             //https://github.com/RickStrahl/Westwind.Utilities/blob/master/Westwind.Utilities/Utilities/ReflectionUtils.cs
 
             /// <summary>
@@ -144,13 +144,13 @@ namespace GbLib.DapperOrm.Context
 
             /// <summary>
             /// Helper routine that looks up a type name and tries to retrieve the
-            /// full type reference using GetType() and if not found looking 
+            /// full type reference using GetType() and if not found looking
             /// in the actively executing assemblies and optionally loading
             /// the specified assembly name.
             /// </summary>
             /// <param name="typeName">type to load</param>
             /// <param name="assemblyName">
-            /// Optional assembly name to load from if type cannot be loaded initially. 
+            /// Optional assembly name to load from if type cannot be loaded initially.
             /// Use for lazy loading of assemblies without taking a type dependency.
             /// </param>
             /// <returns>null</returns>
@@ -192,7 +192,7 @@ namespace GbLib.DapperOrm.Context
             /// assemblies that are already loaded in memory.
             /// </summary>
             /// <param name="typeName"></param>
-            /// <returns></returns>        
+            /// <returns></returns>
             public static Type GetTypeFromName(string typeName)
             {
                 return GetTypeFromName(typeName, null);
@@ -224,7 +224,8 @@ namespace GbLib.DapperOrm.Context
                 }
                 return null;
             }
-            #endregion
+
+            #endregion Reflection Utilities
         }
     }
 }

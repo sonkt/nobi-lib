@@ -39,9 +39,9 @@
             var properties = TypeDescriptor.GetProperties(withProperties);
             return properties.Cast<PropertyDescriptor>().ToDictionary(property => property.Name, property => property.GetValue(withProperties));
         }
+
         public static Expression<Func<T, bool>> And<T>(this Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
         {
-
             ParameterExpression p = a.Parameters[0];
 
             SubstExpressionVisitor visitor = new SubstExpressionVisitor();
@@ -53,7 +53,6 @@
 
         public static Expression<Func<T, bool>> Or<T>(this Expression<Func<T, bool>> a, Expression<Func<T, bool>> b)
         {
-
             ParameterExpression p = a.Parameters[0];
 
             SubstExpressionVisitor visitor = new SubstExpressionVisitor();
@@ -62,6 +61,7 @@
             Expression body = Expression.OrElse(a.Body, visitor.Visit(b.Body));
             return Expression.Lambda<Func<T, bool>>(body, p);
         }
+
         internal class SubstExpressionVisitor : ExpressionVisitor
         {
             public Dictionary<Expression, Expression> subst = new Dictionary<Expression, Expression>();
@@ -76,6 +76,7 @@
                 return node;
             }
         }
+
         #endregion Methods
     }
 }

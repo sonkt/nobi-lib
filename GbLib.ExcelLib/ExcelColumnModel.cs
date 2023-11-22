@@ -13,6 +13,7 @@
         public List<ExcelHeaderModel> Headers { get; set; }
         public List<ExcelFooterModel> Footers { get; set; }
     }
+
     public class ExcelHeaderModel
     {
         public string BgHeaderColor { get; set; }
@@ -22,6 +23,7 @@
         public int HeaderRowSpan { get; set; } = 1;
         public string HeaderTextAlign { get; set; } = "center";
     }
+
     public class ExcelFooterModel
     {
         public string BgFooterColor { get; set; }

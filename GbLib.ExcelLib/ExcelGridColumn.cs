@@ -16,6 +16,7 @@
             ColumnSpan = colSpan;
             Order = order;
         }
+
         public ExcelGridColumn(List<ExcelColumnHeader> header, List<ExcelColumnFooter> footer, string columnName, int order, int colSpan)
         {
             Header = header;
@@ -24,15 +25,17 @@
             ColumnSpan = colSpan;
             Order = order;
         }
+
         public ExcelGridColumn()
         {
-
         }
+
         public ExcelGridColumn SetFooter(List<ExcelColumnFooter> gridFooter)
         {
             Footer = gridFooter;
             return this;
         }
+
         public ExcelGridColumn SetHeader(List<ExcelColumnHeader> gridHeader)
         {
             Header = gridHeader;

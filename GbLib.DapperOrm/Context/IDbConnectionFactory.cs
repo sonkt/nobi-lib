@@ -5,7 +5,7 @@ namespace GbLib.DapperOrm.Context
     public interface IDbConnectionFactory
     {
         IDbConnection OpenDbConnection();
-        IDbTransaction GetDbTransaction();
 
+        IDbTransaction GetDbTransaction();
     }
 }

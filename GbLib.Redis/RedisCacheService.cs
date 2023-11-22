@@ -228,6 +228,7 @@ namespace GbLib.Redis
             var jsonString = JsonConvert.SerializeObject(item);
             return Encoding.UTF8.GetBytes(jsonString);
         }
+
         #endregion Methods
     }
 }

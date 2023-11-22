@@ -11,5 +11,4 @@
         public int MarginTop { get; set; }
         public int MarginLeft { get; set; }
     }
-
 }
