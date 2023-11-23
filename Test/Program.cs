@@ -1,4 +1,6 @@
 using GbLib.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 using Test;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,13 +46,13 @@ app.MapGet("/weatherforecast", () =>
 .WithName("GetWeatherForecast")
 .WithOpenApi();
 
-app.MapGet("/pageddata", async (ITestService testService) =>
+app.MapGet("/pageddata/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
     {
         var dictSort = new Dictionary<string, bool>();
         dictSort.Add("TestCode", false);
-        var data = await testService.FindPagedAsync(1,10,m => m.TestCode.Contains("B"), dictSort, trans);
+        var data = await testService.FindPagedAsync(1, 10, m => m.TestCode.Contains(keyword), dictSort, trans);
         return Results.Ok(data);
     }
 })
@@ -61,11 +63,30 @@ app.MapGet("/countdata", async (ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
     {
-        var data = await testService.QueryAsync<int>("Select Count(*) as NumberOfRow From TestEntities",null, trans);
+        var data = await testService.QueryAsync<int>("Select Count(*) as NumberOfRow From TestEntities", null, trans);
         return Results.Ok(data.FirstOrDefault());
     }
 })
 .WithName("CountData")
+.WithOpenApi();
+
+
+app.MapPut("/updatedata/{code}/{newName}", async ([FromRoute] string code,[FromRoute] string newName, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var data = testService.Find(m => m.TestCode == code, trans);
+        if (data != null)
+        {
+            data.TestName = newName;
+            var updateResult = testService.Update(data, trans);
+            trans.Commit();
+            return Results.Ok(updateResult);
+        }
+        return Results.NoContent();
+    }
+})
+.WithName("UpdateData")
 .WithOpenApi();
 
 app.Run();
