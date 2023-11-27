@@ -10,8 +10,8 @@
 
   <ItemGroup>
     <PackageReference Include="GbLib.Base" Version="1.0.20" />
-    <PackageReference Include="GbLib.Repositories" Version="1.0.1" />
-    <PackageReference Include="GbLib.Services" Version="1.0.4" />
+    <PackageReference Include="GbLib.Repositories" Version="1.0.2" />
+    <PackageReference Include="GbLib.Services" Version="1.0.6" />
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.14" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="7.0.14">
       <PrivateAssets>all</PrivateAssets>

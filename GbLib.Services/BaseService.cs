@@ -9,6 +9,7 @@ using MoreLinq;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Linq.Expressions;
 
 namespace GbLib.Services
@@ -18,7 +19,7 @@ namespace GbLib.Services
     {
         #region Fields
 
-        private readonly IDapperOrmRepository<TEntity,TKey> _repository;
+        private readonly IDapperOrmRepository<TEntity, TKey> _repository;
 
         #endregion Fields
 
@@ -33,24 +34,143 @@ namespace GbLib.Services
 
         #region Methods
 
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, int? numberOfItems, IDbTransaction? dbTransaction = null)
+        {
+            if (sortList == null)
+            {
+                if (numberOfItems != null)
+                {
+                    return _repository.SetLimit((uint)numberOfItems.Value, 0u).FindAllAsync(predicate, dbTransaction);
+                }
+                else
+                {
+                    return _repository.FindAllAsync(predicate, dbTransaction);
+                }
+            }
+            else
+            {
+                var sortingBuilder = new List<string> { };
+                foreach (var item in sortList)
+                {
+                    var order = item.Value ? "DESC " : "ASC ";
+                    sortingBuilder.Add($"{item.Key} {order}");
+                }
+                var strSort = string.Join(", ", sortingBuilder);
+
+                if (numberOfItems != null)
+                {
+                    return _repository.SetOrderBy(strSort).SetLimit((uint)numberOfItems.Value, 0u).FindAllAsync(predicate, dbTransaction);
+                }
+                else
+                {
+                    return _repository.SetOrderBy(strSort).FindAllAsync(predicate, dbTransaction);
+                }
+            }
+        }
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
+        {
+            return FindAllAsync(predicate, sortList, null, dbTransaction);
+        }
+        public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, int? numberOfItems, IDbTransaction? dbTransaction = null)
+        {
+            return FindAllAsync(predicate, null, numberOfItems, dbTransaction);
+        }
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
-            return _repository.FindAllAsync(predicate, dbTransaction);
+            return FindAllAsync(predicate, null, null, dbTransaction);
         }
 
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, int? numberOfItems, IDbTransaction? dbTransaction = null)
+        {
+            if (sortList == null)
+            {
+                if (numberOfItems != null)
+                {
+                    return _repository.SetLimit((uint)numberOfItems.Value, 0u).FindAll(predicate, dbTransaction);
+                }
+                else
+                {
+                    return _repository.FindAll(predicate, dbTransaction);
+                }
+            }
+            else
+            {
+                var sortingBuilder = new List<string> { };
+                foreach (var item in sortList)
+                {
+                    var order = item.Value ? "DESC " : "ASC ";
+                    sortingBuilder.Add($"{item.Key} {order}");
+                }
+                var strSort = string.Join(", ", sortingBuilder);
+
+                if (numberOfItems != null)
+                {
+                    return _repository.SetOrderBy(strSort).SetLimit((uint)numberOfItems.Value, 0u).FindAll(predicate, dbTransaction);
+                }
+                else
+                {
+                    return _repository.SetOrderBy(strSort).FindAll(predicate, dbTransaction);
+                }
+            }
+        }
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
+        {
+            return FindAll(predicate, sortList, null, dbTransaction);
+        }
+        public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, int? numberOfItems, IDbTransaction? dbTransaction = null)
+        {
+            return FindAll(predicate, null, numberOfItems, dbTransaction);
+        }
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
-            return _repository.FindAll(predicate, dbTransaction);
+            return FindAll(predicate, null, null, dbTransaction);
         }
 
+
+        public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
+        {
+            if (sortList == null)
+            {
+                return _repository.FindAsync(predicate, dbTransaction);
+            }
+            else
+            {
+                var sortingBuilder = new List<string> { };
+                foreach (var item in sortList)
+                {
+                    var order = item.Value ? "DESC " : "ASC ";
+                    sortingBuilder.Add($"{item.Key} {order}");
+                }
+                var strSort = string.Join(", ", sortingBuilder);
+                return _repository.SetOrderBy(strSort).SetLimit(1u, 0u).FindAsync(predicate, dbTransaction);
+            }
+        }
         public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
-            return _repository.FindAsync(predicate, dbTransaction);
+            return FindAsync(predicate, null, dbTransaction);
         }
 
+        public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
+        {
+            if (sortList == null)
+            {
+                return _repository.Find(predicate, dbTransaction);
+            }
+            else
+            {
+                var sortingBuilder = new List<string> { };
+                foreach (var item in sortList)
+                {
+                    var order = item.Value ? "DESC " : "ASC ";
+                    sortingBuilder.Add($"{item.Key} {order}");
+                }
+                var strSort = string.Join(", ", sortingBuilder);
+                return _repository.SetOrderBy(strSort).SetLimit(1u, 0u).Find(predicate, dbTransaction);
+            }
+        }
         public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
-            return _repository.Find(predicate, dbTransaction);
+            return Find(predicate, null, dbTransaction);
         }
 
         public virtual Task<TEntity?> FindByIdAsync(TKey id, IDbTransaction? dbTransaction = null)
@@ -489,7 +609,7 @@ namespace GbLib.Services
 
         public Task<bool> DeleteAsync(TEntity instance, IDbTransaction? transaction, TimeSpan? timeout, CancellationToken cancellationToken = default)
         {
-            return _repository.DeleteAsync(instance, timeout, cancellationToken);
+            return _repository.DeleteAsync(instance,transaction, timeout, cancellationToken);
         }
 
         public Task<bool> DeleteAsync(Expression<Func<TEntity, bool>>? predicate, CancellationToken cancellationToken = default)
@@ -589,7 +709,7 @@ namespace GbLib.Services
 
         public Task<bool> UpdateAsync(TEntity instance, IDbTransaction? transaction, params Expression<Func<TEntity, object>>[] includes)
         {
-            return _repository.UpdateAsync(instance, includes);
+            return _repository.UpdateAsync(instance,transaction, includes);
         }
 
         public Task<bool> UpdateAsync(TEntity instance, IDbTransaction? transaction, CancellationToken cancellationToken, params Expression<Func<TEntity, object>>[] includes)

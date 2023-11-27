@@ -13,19 +13,27 @@ namespace GbLib.Services
 
         Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null, IDbTransaction? dbTransaction = null);
 
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList,int? numberOfItems, IDbTransaction? dbTransaction = null);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null);
+        Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, int? numberOfItems, IDbTransaction? dbTransaction = null);
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
+
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, int? numberOfItems, IDbTransaction? dbTransaction = null);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, int? numberOfItems, IDbTransaction? dbTransaction = null);
+        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
         Task<TEntity?> FindByIdAsync(TKey id, IDbTransaction? dbTransaction = null);
 
+        Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null);
         Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
+
+        TEntity? Find(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList , IDbTransaction? dbTransaction = null);
+        TEntity? Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
         Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
-        IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
-
         TEntity? FindById(TKey id, IDbTransaction? dbTransaction = null);
-
-        TEntity? Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 
         int Count(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null);
 

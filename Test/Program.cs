@@ -26,26 +26,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-var summaries = new[]
-{
-    "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching"
-};
-
-app.MapGet("/weatherforecast", () =>
-{
-    var forecast = Enumerable.Range(1, 5).Select(index =>
-        new WeatherForecast
-        (
-            DateOnly.FromDateTime(DateTime.Now.AddDays(index)),
-            Random.Shared.Next(-20, 55),
-            summaries[Random.Shared.Next(summaries.Length)]
-        ))
-        .ToArray();
-    return forecast;
-})
-.WithName("GetWeatherForecast")
-.WithOpenApi();
-
 app.MapGet("/pageddata/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
@@ -70,8 +50,7 @@ app.MapGet("/countdata", async (ITestService testService) =>
 .WithName("CountData")
 .WithOpenApi();
 
-
-app.MapPut("/updatedata/{code}/{newName}", async ([FromRoute] string code,[FromRoute] string newName, ITestService testService) =>
+app.MapPut("/updatedata/{code}/{newName}", async ([FromRoute] string code, [FromRoute] string newName, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
     {
@@ -89,9 +68,86 @@ app.MapPut("/updatedata/{code}/{newName}", async ([FromRoute] string code,[FromR
 .WithName("UpdateData")
 .WithOpenApi();
 
-app.Run();
-
-internal record WeatherForecast(DateOnly Date, int TemperatureC, string? Summary)
+app.MapGet("/alldata/{numOfRows}/{column}/{isDesc}", async ([FromRoute] int numOfRows, [FromRoute] string column, [FromRoute] bool isDesc, ITestService testService) =>
 {
-    public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
-}
+    using (var trans = testService.GetDbTransaction())
+    {
+        var dictSort = new Dictionary<string, bool>();
+        dictSort.Add(column, isDesc);
+        var data = await testService.FindAllAsync(m => m.IsDeleted == null, dictSort, numOfRows, trans);
+        return Results.Ok(data);
+    }
+})
+.WithName("AllData")
+.WithOpenApi();
+
+app.MapGet("/alldata/{numOfRows}", async ([FromRoute] int numOfRows, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var data = await testService.FindAllAsync(m => m.IsDeleted == null, null, numOfRows, trans);
+        return Results.Ok(data);
+    }
+})
+.WithName("AllDataNotColumn")
+.WithOpenApi();
+
+app.MapGet("/alldata/{column}/{isDesc}", async ([FromRoute] string column, [FromRoute] bool isDesc, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var dictSort = new Dictionary<string, bool>();
+        dictSort.Add(column, isDesc);
+        var data = await testService.FindAllAsync(m => m.IsDeleted == null, dictSort, null, trans);
+        return Results.Ok(data);
+    }
+})
+.WithName("AllDataNotNumOfRows")
+.WithOpenApi();
+
+app.MapPost("/", async ([FromBody] TestModel model, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var insertResult = await testService.InsertAsync(new TestEntity
+        {
+            TestCode = model.TestCode,
+            TestName = model.TestName
+        }, trans);
+        if (insertResult)
+        {
+            trans.Commit();
+            return Results.Ok("Insert thành công");
+        }
+        else
+        {
+            trans.Rollback();
+            return Results.Ok("Insert fail cmnr");
+        }
+    }
+})
+.WithName("InsertData")
+.WithOpenApi();
+
+
+app.MapDelete("/{code}", async ([FromRoute] string code, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var insertResult = await testService.DeleteAsync(m=>m.TestCode== code, trans, TimeSpan.FromSeconds(10));
+        if (insertResult)
+        {
+            trans.Commit();
+            return Results.Ok("Xóa thành công");
+        }
+        else
+        {
+            trans.Rollback();
+            return Results.Ok("Xóa fail cmnr");
+        }
+    }
+})
+.WithName("DeleteData")
+.WithOpenApi();
+
+app.Run();
