@@ -1,6 +1,7 @@
+using GbLib.Jwt;
 using GbLib.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using System.Linq.Expressions;
+using System.Security.Claims;
 using Test;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddJwt();
 builder.Services.AddDapperOrmRepository<TestDbContext>();
 builder.Services.Scan(scan => scan
            .FromAssemblyOf<ITestService>()
@@ -129,12 +131,11 @@ app.MapPost("/", async ([FromBody] TestModel model, ITestService testService) =>
 .WithName("InsertData")
 .WithOpenApi();
 
-
 app.MapDelete("/{code}", async ([FromRoute] string code, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
     {
-        var insertResult = await testService.DeleteAsync(m=>m.TestCode== code, trans, TimeSpan.FromSeconds(10));
+        var insertResult = await testService.DeleteAsync(m => m.TestCode == code, trans, TimeSpan.FromSeconds(10));
         if (insertResult)
         {
             trans.Commit();
@@ -148,6 +149,45 @@ app.MapDelete("/{code}", async ([FromRoute] string code, ITestService testServic
     }
 })
 .WithName("DeleteData")
+.WithOpenApi();
+
+
+app.MapGet("/token/{user}", ([FromRoute] string user, IJwtService jwtService) =>
+{
+    var permissions = new int[] {1,2,3,4,5,6,7,8,9};
+    var claims = new List<Claim> {
+        new Claim(JwtClaimsTypes.UserName, user),
+        new Claim(JwtClaimsTypes.Role,"Manager")
+    };
+    foreach (var permission in permissions)
+    {
+        claims.Add(new Claim(JwtClaimsTypes.Permissions,$"{permission}"));
+    }
+    var token = jwtService.GenerateAccessToken(claims);
+    var rfToken = jwtService.GenerateRefreshToken();
+    return Results.Ok(new { 
+        Token= token,
+        RefreshToken = rfToken
+    });
+})
+.WithName("Token")
+.WithOpenApi();
+
+app.MapGet("/refresh-token/{accessToken}/{refreshToken}", ([FromRoute] string accessToken, [FromRoute] string refreshToken, IJwtService jwtService, HttpContext httpContext) =>
+{
+    var principal = jwtService.GetPrincipalFromExpiredToken(accessToken);
+    var username = httpContext.GetClaim(JwtClaimsTypes.UserName)??"";
+
+    var token = jwtService.GenerateAccessToken(principal.Claims);
+    var rfToken = jwtService.GenerateRefreshToken();
+
+    return Results.Ok(new
+    {
+        Token = token,
+        RefreshToken = rfToken
+    });
+})
+.WithName("RefreshToken")
 .WithOpenApi();
 
 app.Run();

@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -60,14 +59,6 @@ namespace GbLib.Jwt
                                     return Task.CompletedTask;
                                 }
                             }
-                            // Đoạn này dành cho SignalR
-                            var accessToken = context.Request.Query["access_token"];
-                            var path = context.HttpContext.Request.Path;
-                            if (!string.IsNullOrEmpty(accessToken) &&
-                                path.StartsWithSegments("/vehicleOnlineHub"))
-                            {
-                                context.Token = accessToken;
-                            }
                             return Task.CompletedTask;
                         },
                         OnAuthenticationFailed = context =>
@@ -93,20 +84,6 @@ namespace GbLib.Jwt
             var expectedDate = dateTime.Subtract(new TimeSpan(centuryBegin.Ticks));
 
             return expectedDate.Ticks / 10000;
-        }
-
-        public static IApplicationBuilder UseJwtTokenValidator(this IApplicationBuilder app)
-        {
-            using (var scope = app.ApplicationServices.CreateScope())
-            {
-                var options = scope.ServiceProvider.GetService<JwtOptions>();
-                if (!options.Enabled)
-                {
-                    return app;
-                }
-                app.UseMiddleware<JwtTokenValidatorMiddleware>();
-            }
-            return app;
         }
     }
 }
