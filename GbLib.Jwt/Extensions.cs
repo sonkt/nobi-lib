@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
@@ -63,6 +64,10 @@ namespace GbLib.Jwt
                         },
                         OnAuthenticationFailed = context =>
                         {
+                            if (context.Exception is SecurityTokenExpiredException)
+                            {
+                               context.HttpContext.Response.StatusCode = 403;
+                            }
                             var te = context.Exception;
                             return Task.CompletedTask;
                         },

@@ -24,6 +24,8 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseAuthentication();
+    app.UseAuthorization();
 }
 
 app.UseHttpsRedirection();
@@ -151,22 +153,22 @@ app.MapDelete("/{code}", async ([FromRoute] string code, ITestService testServic
 .WithName("DeleteData")
 .WithOpenApi();
 
-
 app.MapGet("/token/{user}", ([FromRoute] string user, IJwtService jwtService) =>
 {
-    var permissions = new int[] {1,2,3,4,5,6,7,8,9};
+    var permissions = new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
     var claims = new List<Claim> {
         new Claim(JwtClaimsTypes.UserName, user),
         new Claim(JwtClaimsTypes.Role,"Manager")
     };
     foreach (var permission in permissions)
     {
-        claims.Add(new Claim(JwtClaimsTypes.Permissions,$"{permission}"));
+        claims.Add(new Claim(JwtClaimsTypes.Permissions, $"{permission}"));
     }
     var token = jwtService.GenerateAccessToken(claims);
     var rfToken = jwtService.GenerateRefreshToken();
-    return Results.Ok(new { 
-        Token= token,
+    return Results.Ok(new
+    {
+        Token = token,
         RefreshToken = rfToken
     });
 })
@@ -175,8 +177,9 @@ app.MapGet("/token/{user}", ([FromRoute] string user, IJwtService jwtService) =>
 
 app.MapGet("/refresh-token/{accessToken}/{refreshToken}", ([FromRoute] string accessToken, [FromRoute] string refreshToken, IJwtService jwtService, HttpContext httpContext) =>
 {
+    var oldToken = httpContext.GetToken();
     var principal = jwtService.GetPrincipalFromExpiredToken(accessToken);
-    var username = httpContext.GetClaim(JwtClaimsTypes.UserName)??"";
+    var username = httpContext.GetClaim(JwtClaimsTypes.UserName) ?? "";
 
     var token = jwtService.GenerateAccessToken(principal.Claims);
     var rfToken = jwtService.GenerateRefreshToken();
@@ -188,6 +191,16 @@ app.MapGet("/refresh-token/{accessToken}/{refreshToken}", ([FromRoute] string ac
     });
 })
 .WithName("RefreshToken")
+.WithOpenApi();
+
+app.MapGet("/validate-token", [Auth] (HttpContext httpContext) =>
+{
+    var isValid = httpContext.TokenIsValid();
+
+    return Results.Ok(isValid);
+})
+.RequireAuthorization()
+.WithName("ValidToken")
 .WithOpenApi();
 
 app.Run();

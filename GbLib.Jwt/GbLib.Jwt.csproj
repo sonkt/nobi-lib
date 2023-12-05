@@ -8,7 +8,7 @@
     <Title>GbLib.Jwt</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>The library for Authentication</Description>
-    <Version>1.0.9</Version>
+    <Version>1.0.13</Version>
   </PropertyGroup>
 
   <ItemGroup>

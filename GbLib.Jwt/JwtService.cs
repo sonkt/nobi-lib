@@ -1,8 +1,6 @@
-﻿using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
@@ -35,6 +33,15 @@ namespace GbLib.Jwt
         #endregion Constructors
 
         #region Methods
+        public string? GetClaim(ClaimsPrincipal claimsPrincipal, string claimType)
+        {
+            return claimsPrincipal.Claims
+               .Where(x => x.Type == claimType)
+               .Select(x => x.Value)
+               .FirstOrDefault();
+        }
+
+
 
         public string GenerateAccessToken(IEnumerable<Claim> claims, int expiredMinute = 0)
         {
@@ -68,14 +75,15 @@ namespace GbLib.Jwt
         {           
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
+            _tokenValidationParameters.ValidateLifetime = false;
             var principal = tokenHandler.ValidateToken(token, _tokenValidationParameters, out securityToken);
             var jwtSecurityToken = securityToken as JwtSecurityToken;
             if (jwtSecurityToken == null || !jwtSecurityToken.Header.Alg.Equals(SecurityAlgorithms.HmacSha256, StringComparison.InvariantCultureIgnoreCase))
                 throw new SecurityTokenException("Invalid token");
+            _tokenValidationParameters.ValidateLifetime = _options.ValidateLifetime;
             return principal;
         }
 
-       
         #endregion Methods
     }
 }

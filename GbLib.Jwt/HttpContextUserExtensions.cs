@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using System.IdentityModel.Tokens.Jwt;
 
 namespace GbLib.Jwt
 {
@@ -13,6 +14,32 @@ namespace GbLib.Jwt
                .Select(x => x.Value)
                .FirstOrDefault();
         }
+
+        public static bool TokenIsValid(this HttpContext httpContext)
+        {
+            var token = GetToken(httpContext);
+            JwtSecurityToken jwtSecurityToken;
+            try
+            {
+                jwtSecurityToken = new JwtSecurityToken(token);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return jwtSecurityToken.ValidTo > DateTime.UtcNow;
+        }
+
+
+        public static string GetToken(this HttpContext httpContext)
+        {           
+            var authorizationHeader = httpContext.Request.Headers["authorization"];
+            return string.IsNullOrEmpty(authorizationHeader)
+                ? string.Empty
+                : authorizationHeader.Single().Split(' ').Last();
+        }
+
 
         public static bool HasPermission(this HttpContext httpContext, int[]? listPermission, string excerpt = "-1")
         {
