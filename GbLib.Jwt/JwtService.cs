@@ -33,12 +33,19 @@ namespace GbLib.Jwt
         #endregion Constructors
 
         #region Methods
-        public string? GetClaim(ClaimsPrincipal claimsPrincipal, string claimType)
+        public IEnumerable<string>? GetClaims(ClaimsPrincipal claimsPrincipal, string claimType)
         {
             return claimsPrincipal.Claims
                .Where(x => x.Type == claimType)
-               .Select(x => x.Value)
-               .FirstOrDefault();
+               .Select(x => x.Value);
+        }
+
+        public IEnumerable<string>? GetClaims(string token, string claimType)
+        {
+            var principles = GetPrincipalFromToken(token);
+            return principles.Claims
+               .Where(x => x.Type == claimType)
+               .Select(x => x.Value);
         }
 
 
@@ -71,7 +78,7 @@ namespace GbLib.Jwt
             }
         }
 
-        public ClaimsPrincipal GetPrincipalFromExpiredToken(string token)
+        public ClaimsPrincipal GetPrincipalFromToken(string token)
         {           
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;

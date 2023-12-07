@@ -175,12 +175,12 @@ app.MapGet("/token/{user}", ([FromRoute] string user, IJwtService jwtService) =>
 .WithName("Token")
 .WithOpenApi();
 
-app.MapGet("/refresh-token/{accessToken}/{refreshToken}", ([FromRoute] string accessToken, [FromRoute] string refreshToken, IJwtService jwtService, HttpContext httpContext) =>
+app.MapGet("/refresh-token/{accessToken}/{refreshToken}", [Auth] ([FromRoute] string accessToken, [FromRoute] string refreshToken, IJwtService jwtService, HttpContext httpContext) =>
 {
     var oldToken = httpContext.GetToken();
-    var principal = jwtService.GetPrincipalFromExpiredToken(accessToken);
-    var username = httpContext.GetClaim(JwtClaimsTypes.UserName) ?? "";
-
+    var principal = jwtService.GetPrincipalFromToken(oldToken);
+    var username = httpContext.GetClaim(JwtClaimsTypes.UserName) ?? new List<string> { };
+    var permissions = jwtService.GetClaims(principal,JwtClaimsTypes.Permissions);
     var token = jwtService.GenerateAccessToken(principal.Claims);
     var rfToken = jwtService.GenerateRefreshToken();
 

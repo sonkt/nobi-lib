@@ -6,13 +6,12 @@ namespace GbLib.Jwt
     public static class HttpContextClaimsExtensions
     {
         #region Methods
-
-        public static string? GetClaim(this HttpContext httpContext, string claimType)
+        [Obsolete]
+        public static IEnumerable<string>? GetClaims(this HttpContext httpContext, string claimType)
         {
             return httpContext?.User?.Claims
                .Where(x => x.Type == claimType)
-               .Select(x => x.Value)
-               .FirstOrDefault();
+               .Select(x => x.Value);
         }
 
         public static bool TokenIsValid(this HttpContext httpContext)
