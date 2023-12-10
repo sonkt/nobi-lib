@@ -5,6 +5,7 @@ using GbLib.Entities;
 using GbLib.ExcelLib;
 using GbLib.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
+using Microsoft.Data.SqlClient;
 using MoreLinq;
 using OfficeOpenXml.Style;
 using System.Data;
@@ -777,14 +778,40 @@ namespace GbLib.Services
             return _repository.BulkUpdateAsync(instances, transaction, cancellationToken);
         }
 
-        public Task<int> ExecuteAsync(string sql, object? param = null, IDbTransaction? dbTransaction = null)
+        public Task<int> ExecuteAsync(string sql, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return _repository.Connection.ExecuteAsync(sql, param, dbTransaction);
+            var dynParams = new DynamicParameters();
+            foreach (var item in parammeters)
+            {
+                if (item.Direction == ParameterDirection.Output)
+                {
+                    dynParams.Add(item.ParameterName, dbType: item.DbType, direction: item.Direction);
+                }
+                else
+                {
+                    dynParams.Add(item.ParameterName, item.Value, item.DbType, item.Direction);
+                }
+            }
+            var commandDefinition = new CommandDefinition(sql, dynParams, dbTransaction, commandTimeout, commandType);
+            return _repository.Connection.ExecuteAsync(commandDefinition);
         }
 
-        public Task<IEnumerable<T>> QueryAsync<T>(string sql, object? param = null, IDbTransaction? dbTransaction = null)
+        public Task<IEnumerable<T>> QueryAsync<T>(string sql, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-            return _repository.Connection.QueryAsync<T>(sql, param, dbTransaction);
+            var dynParams = new DynamicParameters();
+            foreach (var item in parammeters)
+            {
+                if (item.Direction == ParameterDirection.Output)
+                {
+                    dynParams.Add(item.ParameterName, dbType: item.DbType, direction: item.Direction);
+                }
+                else
+                {
+                    dynParams.Add(item.ParameterName, item.Value, item.DbType, item.Direction);
+                }
+            }
+            var commandDefinition = new CommandDefinition(sql, dynParams, dbTransaction, commandTimeout, commandType);
+            return _repository.Connection.QueryAsync<T>(commandDefinition);
         }
 
         #endregion Methods

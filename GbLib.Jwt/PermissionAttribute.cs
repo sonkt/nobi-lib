@@ -11,6 +11,11 @@ namespace GbLib.Jwt
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
+            // Nếu call từ localhost hoặc đằng sau KONG thì bỏ qua check permission
+            if (context.HttpContext.Request.Host.Host == "localhost" || context.HttpContext.Request.Host.Host == "kong" || !context.HttpContext.Request.Headers.ContainsKey("x-via-kong"))
+            {
+                return;
+            }
             var permission = (context.HttpContext.HasPermission(Permissions));
             if (!permission)
             {
@@ -28,7 +33,10 @@ namespace GbLib.Jwt
 
         public void OnAuthorization(AuthorizationFilterContext context)
         {
-            // -1 là quyền của Root
+            if (context.HttpContext.Request.Host.Host == "localhost" || context.HttpContext.Request.Host.Host == "kong" || !context.HttpContext.Request.Headers.ContainsKey("x-via-kong"))
+            {
+                return;
+            }
             var permission = (context.HttpContext.HasPermissionAll(Permissions));
             if (!permission)
             {

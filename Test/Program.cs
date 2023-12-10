@@ -1,6 +1,8 @@
 using GbLib.Jwt;
 using GbLib.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Data.SqlClient;
+using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
 using System.Security.Claims;
 using Test;
 
@@ -54,7 +56,7 @@ app.MapGet("/countdata", async (ITestService testService) =>
 .WithName("CountData")
 .WithOpenApi();
 
-app.MapPut("/updatedata/{code}/{newName}", async ([FromRoute] string code, [FromRoute] string newName, ITestService testService) =>
+app.MapPut("/updatedata/{code}/{newName}", ([FromRoute] string code, [FromRoute] string newName, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
     {
@@ -64,9 +66,9 @@ app.MapPut("/updatedata/{code}/{newName}", async ([FromRoute] string code, [From
             data.TestName = newName;
             var updateResult = testService.Update(data, trans);
             trans.Commit();
-            return Results.Ok(updateResult);
+            return Task.FromResult(Results.Ok(updateResult));
         }
-        return Results.NoContent();
+        return Task.FromResult(Results.NoContent());
     }
 })
 .WithName("UpdateData")
@@ -179,8 +181,8 @@ app.MapGet("/refresh-token/{accessToken}/{refreshToken}", [Auth] ([FromRoute] st
 {
     var oldToken = httpContext.GetToken();
     var principal = jwtService.GetPrincipalFromToken(oldToken);
-    var username = httpContext.GetClaim(JwtClaimsTypes.UserName) ?? new List<string> { };
-    var permissions = jwtService.GetClaims(principal,JwtClaimsTypes.Permissions);
+    var username = httpContext.GetClaims(JwtClaimsTypes.UserName) ?? new List<string> { };
+    var permissions = jwtService.GetClaims(principal, JwtClaimsTypes.Permissions);
     var token = jwtService.GenerateAccessToken(principal.Claims);
     var rfToken = jwtService.GenerateRefreshToken();
 
@@ -201,6 +203,40 @@ app.MapGet("/validate-token", [Auth] (HttpContext httpContext) =>
 })
 .RequireAuthorization()
 .WithName("ValidToken")
+.WithOpenApi();
+
+
+app.MapPost("/insert/{code}/{name}", async ([FromRoute] string code, [FromRoute] string name, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var c = new SqlParameter
+        {
+            ParameterName = "@code",
+            DbType = System.Data.DbType.String,
+            SqlDbType = System.Data.SqlDbType.NVarChar,
+            Direction = System.Data.ParameterDirection.Input,
+            Value = code
+        };
+        var n = new SqlParameter
+        {
+            ParameterName = "@name",
+            DbType = System.Data.DbType.String,
+            SqlDbType = System.Data.SqlDbType.NVarChar,
+            Direction = System.Data.ParameterDirection.Input,
+            Value = name
+        };
+
+        var result = await testService.ExecuteAsync("InsertData", new SqlParameter[] {c, n }, trans, 100, System.Data.CommandType.StoredProcedure);
+        trans.Commit();
+        return Results.Ok(new
+        {
+            Result= result
+        });
+    }
+   
+})
+.WithName("Insert")
 .WithOpenApi();
 
 app.Run();

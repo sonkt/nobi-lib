@@ -46,20 +46,20 @@ namespace GbLib.Jwt
                     {
                         OnMessageReceived = context =>
                         {
-                            // Lấy về token trong request.
-                            // Nếu có Token thì cứ chạy bình thường
-                            // Nếu không có thì kiểm tra xem có phải chạy local hoặc từ Internal
-                            // Nếu chạy từ internal hoặc local thì dùng key vĩnh viễn.
-                            var requestToken = context.HttpContext.Request.Headers["authorization"];
-                            if (string.IsNullOrEmpty(requestToken))
-                            {
-                                // Đoạn này dành cho Localhost
-                                if (context.HttpContext.Request.Host.Host == "localhost" || context.HttpContext.Request.Host.Host == "kong" || !context.HttpContext.Request.Headers.ContainsKey("x-via-kong"))
-                                {
-                                    context.Token = jwtOptions.InternalTokenKey;
-                                    return Task.CompletedTask;
-                                }
-                            }
+                            //// Lấy về token trong request.
+                            //// Nếu có Token thì cứ chạy bình thường
+                            //// Nếu không có thì kiểm tra xem có phải chạy local hoặc từ Internal
+                            //// Nếu chạy từ internal hoặc local thì dùng key vĩnh viễn.
+                            //var requestToken = context.HttpContext.Request.Headers["authorization"];
+                            //if (string.IsNullOrEmpty(requestToken))
+                            //{
+                            //    // Đoạn này dành cho Localhost
+                            //    if (context.HttpContext.Request.Host.Host == "localhost" || context.HttpContext.Request.Host.Host == "kong" || !context.HttpContext.Request.Headers.ContainsKey("x-via-kong"))
+                            //    {
+                            //        context.Token = jwtOptions.InternalTokenKey;
+                            //        return Task.CompletedTask;
+                            //    }
+                            //}
                             return Task.CompletedTask;
                         },
                         OnAuthenticationFailed = context =>

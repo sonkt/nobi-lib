@@ -6,7 +6,6 @@ namespace GbLib.Jwt
     public static class HttpContextClaimsExtensions
     {
         #region Methods
-        [Obsolete]
         public static IEnumerable<string>? GetClaims(this HttpContext httpContext, string claimType)
         {
             return httpContext?.User?.Claims
