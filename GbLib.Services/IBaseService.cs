@@ -11,9 +11,9 @@ namespace GbLib.Services
     {
         #region Methods
 
-        Task<int> ExecuteAsync(string sql, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<int> ExecuteAsync(string sql, SqlParameter[]? parammeters=null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null);
 
-        Task<IEnumerable<T>> QueryAsync<T>(string sql, SqlParameter[] parammeters, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null);
+        Task<IEnumerable<T>> QueryAsync<T>(string sql, SqlParameter[]? parammeters=null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null);
 
         Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, int? numberOfItems, IDbTransaction? dbTransaction = null);
 
