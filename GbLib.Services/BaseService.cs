@@ -778,53 +778,15 @@ namespace GbLib.Services
             return _repository.BulkUpdateAsync(instances, transaction, cancellationToken);
         }
 
-        public Task<int> ExecuteAsync(string sql, SqlParameter[]? parammeters = null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
-        {
-            var dynParams = new DynamicParameters();
-            if (parammeters != null)
-            {
-                foreach (var item in parammeters)
-                {
-                    if (item.Direction == ParameterDirection.Output)
-                    {
-                        dynParams.Add(item.ParameterName, dbType: item.DbType, direction: item.Direction);
-                    }
-                    else
-                    {
-                        dynParams.Add(item.ParameterName, item.Value, item.DbType, item.Direction);
-                    }
-                }
-            }
-            else
-            {
-                dynParams = null;
-            }
+        public Task<int> ExecuteAsync(string sql, DynamicParameters? dynParams = null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
+        {           
             var commandDefinition = new CommandDefinition(sql, dynParams, dbTransaction, commandTimeout, commandType);
             return _repository.Connection.ExecuteAsync(commandDefinition);
         }
 
-        public Task<IEnumerable<T>> QueryAsync<T>(string sql, SqlParameter[]? parammeters = null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
+        public Task<IEnumerable<T>> QueryAsync<T>(string sql, DynamicParameters? dynParams = null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-
-            var dynParams = new DynamicParameters();
-            if (parammeters != null)
-            {
-                foreach (var item in parammeters)
-                {
-                    if (item.Direction == ParameterDirection.Output)
-                    {
-                        dynParams.Add(item.ParameterName, dbType: item.DbType, direction: item.Direction);
-                    }
-                    else
-                    {
-                        dynParams.Add(item.ParameterName, item.Value, item.DbType, item.Direction);
-                    }
-                }
-            }
-            else
-            {
-                dynParams = null;
-            }
+           
             var commandDefinition = new CommandDefinition(sql, dynParams, dbTransaction, commandTimeout, commandType);
             return _repository.Connection.QueryAsync<T>(commandDefinition);
 

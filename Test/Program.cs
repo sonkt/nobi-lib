@@ -1,3 +1,4 @@
+using Dapper;
 using GbLib.Jwt;
 using GbLib.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -32,7 +33,7 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.MapGet("/pageddata/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
+app.MapGet("/all/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
     {
@@ -42,7 +43,7 @@ app.MapGet("/pageddata/{keyword}", async ([FromRoute] string keyword, ITestServi
         return Results.Ok(data);
     }
 })
-.WithName("PagedData")
+.WithName("SearchData")
 .WithOpenApi();
 
 app.MapGet("/countdata", async (ITestService testService) =>
@@ -74,6 +75,20 @@ app.MapPut("/updatedata/{code}/{newName}", ([FromRoute] string code, [FromRoute]
 .WithName("UpdateData")
 .WithOpenApi();
 
+app.MapGet("/all/{column}/{isDesc}", async ([FromRoute] string column, [FromRoute] bool isDesc, ITestService testService) =>
+{
+    using (var trans = testService.GetDbTransaction())
+    {
+        var dictSort = new Dictionary<string, bool>();
+        dictSort.Add(column, isDesc);
+        var data = await testService.FindAllAsync(m => m.IsDeleted == null, dictSort, trans);
+        return Results.Ok(data);
+    }
+})
+.WithName("AllData")
+.WithOpenApi();
+
+
 app.MapGet("/alldata/{numOfRows}/{column}/{isDesc}", async ([FromRoute] int numOfRows, [FromRoute] string column, [FromRoute] bool isDesc, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
@@ -84,7 +99,7 @@ app.MapGet("/alldata/{numOfRows}/{column}/{isDesc}", async ([FromRoute] int numO
         return Results.Ok(data);
     }
 })
-.WithName("AllData")
+.WithName("PagedData")
 .WithOpenApi();
 
 app.MapGet("/alldata/{numOfRows}", async ([FromRoute] int numOfRows, ITestService testService) =>
@@ -98,18 +113,6 @@ app.MapGet("/alldata/{numOfRows}", async ([FromRoute] int numOfRows, ITestServic
 .WithName("AllDataNotColumn")
 .WithOpenApi();
 
-app.MapGet("/alldata/{column}/{isDesc}", async ([FromRoute] string column, [FromRoute] bool isDesc, ITestService testService) =>
-{
-    using (var trans = testService.GetDbTransaction())
-    {
-        var dictSort = new Dictionary<string, bool>();
-        dictSort.Add(column, isDesc);
-        var data = await testService.FindAllAsync(m => m.IsDeleted == null, dictSort, null, trans);
-        return Results.Ok(data);
-    }
-})
-.WithName("AllDataNotNumOfRows")
-.WithOpenApi();
 
 app.MapPost("/", async ([FromBody] TestModel model, ITestService testService) =>
 {
@@ -210,24 +213,11 @@ app.MapPost("/insert/{code}/{name}", async ([FromRoute] string code, [FromRoute]
 {
     using (var trans = testService.GetDbTransaction())
     {
-        var c = new SqlParameter
-        {
-            ParameterName = "@code",
-            DbType = System.Data.DbType.String,
-            SqlDbType = System.Data.SqlDbType.NVarChar,
-            Direction = System.Data.ParameterDirection.Input,
-            Value = code
-        };
-        var n = new SqlParameter
-        {
-            ParameterName = "@name",
-            DbType = System.Data.DbType.String,
-            SqlDbType = System.Data.SqlDbType.NVarChar,
-            Direction = System.Data.ParameterDirection.Input,
-            Value = name
-        };
-
-        var result = await testService.ExecuteAsync("InsertData", new SqlParameter[] {c, n }, trans, 100, System.Data.CommandType.StoredProcedure);
+        var parameters = new DynamicParameters();
+        parameters.Add("@code", code, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+        parameters.Add("@name", name, System.Data.DbType.String, System.Data.ParameterDirection.Input);
+       
+        var result = await testService.ExecuteAsync("InsertData", parameters, trans, 100, System.Data.CommandType.StoredProcedure);
         trans.Commit();
         return Results.Ok(new
         {
