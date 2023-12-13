@@ -1,5 +1,6 @@
 ﻿using GbLib.Base;
 using GbLib.Base.Attributes;
+using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System.Collections.Concurrent;
 
 namespace GbLib.Entities
@@ -34,8 +35,8 @@ namespace GbLib.Entities
     public abstract class DeleteEntity<TKey> : EntityBase<TKey>, IDeleteEntity<TKey>
     {
         #region Properties
-
-        public bool? IsDeleted { get; set; }
+        [Status,Deleted]
+        public bool IsDeleted { get; set; } = false;
 
         #endregion Properties
     }

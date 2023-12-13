@@ -142,7 +142,8 @@ app.MapDelete("/{code}", async ([FromRoute] string code, ITestService testServic
 {
     using (var trans = testService.GetDbTransaction())
     {
-        var insertResult = await testService.DeleteAsync(m => m.TestCode == code, trans, TimeSpan.FromSeconds(10));
+        var entity = await testService.FindAsync(m => m.TestCode == code, trans);
+        var insertResult = await testService.DeleteAsync(entity, trans, TimeSpan.FromSeconds(10));
         if (insertResult)
         {
             trans.Commit();

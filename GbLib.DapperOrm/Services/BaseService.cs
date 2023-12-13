@@ -225,6 +225,7 @@ namespace GbLib.DapperOrm.Services
                             {
                                 IsBold = true,
                                 IsWrapText = true,
+                                DataFormat = header.DataFormat,
                                 TextAlignment = GetExcelAlign(header.HeaderTextAlign),
                                 TextVerticalAlignment = ExcelVerticalAlignment.Center,
                                 BackgroundColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(header.BgHeaderColor) ? header.BgHeaderColor : "#2d9cdb"),
@@ -248,6 +249,7 @@ namespace GbLib.DapperOrm.Services
                                 IsBold = true,
                                 IsWrapText = true,
                                 TextAlignment = GetExcelAlign(footer.FooterTextAlign),
+                                DataFormat = footer.DataFormat,
                                 TextVerticalAlignment = ExcelVerticalAlignment.Center,
                                 BackgroundColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(footer.BgFooterColor) ? footer.BgFooterColor : "#2d9cdb"),
                                 TextColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(footer.TextFooterColor) ? footer.TextFooterColor : "#FFF")

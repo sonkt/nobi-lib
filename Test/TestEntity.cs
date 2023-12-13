@@ -1,4 +1,5 @@
 ﻿using GbLib.Entities;
+using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -15,5 +16,7 @@ namespace Test
         public string? TestCode { get; set; }
 
         public string? TestName { get; set; }
+        [Status,Deleted]
+        public new bool IsDeleted { get; set; }
     }
 }

@@ -21,6 +21,7 @@
         public string HeaderText { get; set; }
         public int HeaderColSpan { get; set; } = 1;
         public int HeaderRowSpan { get; set; } = 1;
+        public string DataFormat { get; set; } = "General";
         public string HeaderTextAlign { get; set; } = "center";
     }
 
@@ -30,6 +31,7 @@
         public string TextFooterColor { get; set; }
         public string FooterText { get; set; }
         public string FooterTextAlign { get; set; } = "center";
+        public string DataFormat { get; set; } = "General";
         public int FooterColSpan { get; set; } = 1;
         public int FooterRowSpan { get; set; } = 1;
     }

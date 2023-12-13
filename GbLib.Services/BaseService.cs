@@ -5,12 +5,11 @@ using GbLib.Entities;
 using GbLib.ExcelLib;
 using GbLib.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Components.Routing;
 using MoreLinq;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Printing;
 using System.Linq.Expressions;
 
 namespace GbLib.Services
@@ -37,16 +36,14 @@ namespace GbLib.Services
 
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, int? numberOfItems, IDbTransaction? dbTransaction = null)
         {
+            if (numberOfItems == null)
+            {
+                numberOfItems = int.MaxValue;
+            }
+
             if (sortList == null)
             {
-                if (numberOfItems != null)
-                {
-                    return _repository.SetLimit((uint)numberOfItems.Value, 0u).FindAllAsync(predicate, dbTransaction);
-                }
-                else
-                {
-                    return _repository.FindAllAsync(predicate, dbTransaction);
-                }
+                return _repository.SetLimit((uint)numberOfItems.Value, 0u).FindAllAsync(predicate, dbTransaction);
             }
             else
             {
@@ -57,25 +54,20 @@ namespace GbLib.Services
                     sortingBuilder.Add($"{item.Key} {order}");
                 }
                 var strSort = string.Join(", ", sortingBuilder);
-
-                if (numberOfItems != null)
-                {
-                    return _repository.SetOrderBy(strSort).SetLimit((uint)numberOfItems.Value, 0u).FindAllAsync(predicate, dbTransaction);
-                }
-                else
-                {
-                    return _repository.SetOrderBy(strSort).FindAllAsync(predicate, dbTransaction);
-                }
+                return _repository.SetOrderBy(strSort).SetLimit((uint)numberOfItems.Value, 0u).FindAllAsync(predicate, dbTransaction);
             }
         }
+
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
         {
             return FindAllAsync(predicate, sortList, null, dbTransaction);
         }
+
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, int? numberOfItems, IDbTransaction? dbTransaction = null)
         {
             return FindAllAsync(predicate, null, numberOfItems, dbTransaction);
         }
+
         public virtual Task<IEnumerable<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
             return FindAllAsync(predicate, null, null, dbTransaction);
@@ -83,16 +75,13 @@ namespace GbLib.Services
 
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, int? numberOfItems, IDbTransaction? dbTransaction = null)
         {
+            if (numberOfItems == null)
+            {
+                numberOfItems = int.MaxValue;
+            }
             if (sortList == null)
             {
-                if (numberOfItems != null)
-                {
-                    return _repository.SetLimit((uint)numberOfItems.Value, 0u).FindAll(predicate, dbTransaction);
-                }
-                else
-                {
-                    return _repository.FindAll(predicate, dbTransaction);
-                }
+                return _repository.SetLimit((uint)numberOfItems.Value, 0u).FindAll(predicate, dbTransaction);
             }
             else
             {
@@ -104,29 +93,24 @@ namespace GbLib.Services
                 }
                 var strSort = string.Join(", ", sortingBuilder);
 
-                if (numberOfItems != null)
-                {
-                    return _repository.SetOrderBy(strSort).SetLimit((uint)numberOfItems.Value, 0u).FindAll(predicate, dbTransaction);
-                }
-                else
-                {
-                    return _repository.SetOrderBy(strSort).FindAll(predicate, dbTransaction);
-                }
+                return _repository.SetOrderBy(strSort).SetLimit((uint)numberOfItems.Value, 0u).FindAll(predicate, dbTransaction);
             }
         }
+
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
         {
             return FindAll(predicate, sortList, null, dbTransaction);
         }
+
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, int? numberOfItems, IDbTransaction? dbTransaction = null)
         {
             return FindAll(predicate, null, numberOfItems, dbTransaction);
         }
+
         public virtual IEnumerable<TEntity> FindAll(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
             return FindAll(predicate, null, null, dbTransaction);
         }
-
 
         public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, Dictionary<string, bool>? sortList, IDbTransaction? dbTransaction = null)
         {
@@ -146,6 +130,7 @@ namespace GbLib.Services
                 return _repository.SetOrderBy(strSort).SetLimit(1u, 0u).FindAsync(predicate, dbTransaction);
             }
         }
+
         public virtual Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
             return FindAsync(predicate, null, dbTransaction);
@@ -169,6 +154,7 @@ namespace GbLib.Services
                 return _repository.SetOrderBy(strSort).SetLimit(1u, 0u).Find(predicate, dbTransaction);
             }
         }
+
         public virtual TEntity? Find(Expression<Func<TEntity, bool>> predicate, IDbTransaction? dbTransaction = null)
         {
             return Find(predicate, null, dbTransaction);
@@ -297,10 +283,11 @@ namespace GbLib.Services
                             {
                                 IsBold = true,
                                 IsWrapText = true,
+                                DataFormat = header.DataFormat,
                                 TextAlignment = GetExcelAlign(header.HeaderTextAlign),
                                 TextVerticalAlignment = ExcelVerticalAlignment.Center,
-                                BackgroundColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(header.BgHeaderColor) ? header.BgHeaderColor : "#2d9cdb"),
-                                TextColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(header.TextHeaderColor) ? header.TextHeaderColor : "#FFF")
+                                BackgroundColor = ColorTranslator.FromHtml(!string.IsNullOrEmpty(header.BgHeaderColor) ? header.BgHeaderColor : "#2d9cdb"),
+                                TextColor = ColorTranslator.FromHtml(!string.IsNullOrEmpty(header.TextHeaderColor) ? header.TextHeaderColor : "#FFF")
                             }
                         });
                     }
@@ -320,6 +307,7 @@ namespace GbLib.Services
                                 IsBold = true,
                                 IsWrapText = true,
                                 TextAlignment = GetExcelAlign(footer.FooterTextAlign),
+                                DataFormat = footer.DataFormat,
                                 TextVerticalAlignment = ExcelVerticalAlignment.Center,
                                 BackgroundColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(footer.BgFooterColor) ? footer.BgFooterColor : "#2d9cdb"),
                                 TextColor = System.Drawing.ColorTranslator.FromHtml(!string.IsNullOrEmpty(footer.TextFooterColor) ? footer.TextFooterColor : "#FFF")
@@ -779,17 +767,15 @@ namespace GbLib.Services
         }
 
         public Task<int> ExecuteAsync(string sql, DynamicParameters? dynParams = null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
-        {           
+        {
             var commandDefinition = new CommandDefinition(sql, dynParams, dbTransaction, commandTimeout, commandType);
             return _repository.Connection.ExecuteAsync(commandDefinition);
         }
 
         public Task<IEnumerable<T>> QueryAsync<T>(string sql, DynamicParameters? dynParams = null, IDbTransaction? dbTransaction = null, int? commandTimeout = null, CommandType? commandType = null)
         {
-           
             var commandDefinition = new CommandDefinition(sql, dynParams, dbTransaction, commandTimeout, commandType);
             return _repository.Connection.QueryAsync<T>(commandDefinition);
-
         }
 
         #endregion Methods

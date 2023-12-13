@@ -12,8 +12,8 @@ using Test;
 namespace Test.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20231122101539_Seeding_Data")]
-    partial class Seeding_Data
+    [Migration("20231213071040_Seeding")]
+    partial class Seeding
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -50,7 +50,7 @@ namespace Test.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsDeleted")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("TestCode")

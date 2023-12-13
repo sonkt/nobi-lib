@@ -12,7 +12,7 @@ using Test;
 namespace Test.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20231122101507_Initialize")]
+    [Migration("20231213071020_Initialize")]
     partial class Initialize
     {
         /// <inheritdoc />
@@ -50,7 +50,7 @@ namespace Test.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsDeleted")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("TestCode")
