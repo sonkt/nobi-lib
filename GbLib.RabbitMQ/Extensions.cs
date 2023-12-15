@@ -24,13 +24,13 @@ namespace GbLib.RabbitMQ
                     var factory = new ConnectionFactory()
                     {
                         HostName = options.Hostnames[0],
-                        RequestedConnectionTimeout = TimeSpan.FromSeconds(options.RequestTimeout),
+                        //RequestedConnectionTimeout = TimeSpan.FromSeconds(options.RequestTimeout),
                         UserName = options.Username,
                         Password = options.Password,
                         AutomaticRecoveryEnabled = options.AutomaticRecovery,
                         Port = options.Port,
                         VirtualHost = string.IsNullOrEmpty(options.VirtualHost) ? "/" : options.VirtualHost,
-                        NetworkRecoveryInterval = TimeSpan.FromSeconds(1)
+                        //NetworkRecoveryInterval = TimeSpan.FromSeconds(options.RecoveryInterval)
                     };
 
                     services.AddSingleton<IConnectionFactory>(factory);

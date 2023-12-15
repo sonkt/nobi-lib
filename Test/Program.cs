@@ -1,9 +1,12 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Dapper;
+using GbLib.Base;
 using GbLib.Jwt;
+using GbLib.RabbitMQ;
 using GbLib.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Data.SqlClient;
-using OfficeOpenXml.FormulaParsing.LexicalAnalysis;
+using System.Reflection;
 using System.Security.Claims;
 using Test;
 
@@ -13,13 +16,27 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddJwt();
+builder.Services.AddBusRabbitMq();
+builder.Services.AddSingleton<ICorrelationContext,CorrelationContext>();
 builder.Services.AddDapperOrmRepository<TestDbContext>();
 builder.Services.Scan(scan => scan
            .FromAssemblyOf<ITestService>()
                 .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
                    .AsImplementedInterfaces()
                    .WithScopedLifetime());
-
+builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
+    .ConfigureContainer<ContainerBuilder>(builder =>
+    {
+        var assembly = typeof(TestEntity).GetTypeInfo().Assembly;
+        builder.RegisterType<RabbitMqPublisher>().As<IRabbitMqPublisher>().OnActivating(e => e.Instance.Init()).SingleInstance();
+        builder.RegisterType<RabbitMqSubscriber>().As<IRabbitMqSubscriber>().InstancePerLifetimeScope();
+        builder.RegisterAssemblyTypes(assembly)
+                .AsClosedTypesOf(typeof(IEventHandler<>))
+                .InstancePerLifetimeScope();
+        builder.RegisterAssemblyTypes(assembly)
+            .AsClosedTypesOf(typeof(ICommandHandler<>))
+            .InstancePerLifetimeScope();
+    });
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -30,7 +47,7 @@ if (app.Environment.IsDevelopment())
     app.UseAuthentication();
     app.UseAuthorization();
 }
-
+app.RabbitMqEventBusSubcriber().SubscribeEvent<TestEvent>();
 app.UseHttpsRedirection();
 
 app.MapGet("/all/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
@@ -88,7 +105,6 @@ app.MapGet("/all/{column}/{isDesc}", async ([FromRoute] string column, [FromRout
 .WithName("AllData")
 .WithOpenApi();
 
-
 app.MapGet("/alldata/{numOfRows}/{column}/{isDesc}", async ([FromRoute] int numOfRows, [FromRoute] string column, [FromRoute] bool isDesc, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
@@ -112,7 +128,6 @@ app.MapGet("/alldata/{numOfRows}", async ([FromRoute] int numOfRows, ITestServic
 })
 .WithName("AllDataNotColumn")
 .WithOpenApi();
-
 
 app.MapPost("/", async ([FromBody] TestModel model, ITestService testService) =>
 {
@@ -209,7 +224,6 @@ app.MapGet("/validate-token", [Auth] (HttpContext httpContext) =>
 .WithName("ValidToken")
 .WithOpenApi();
 
-
 app.MapPost("/insert/{code}/{name}", async ([FromRoute] string code, [FromRoute] string name, ITestService testService) =>
 {
     using (var trans = testService.GetDbTransaction())
@@ -217,17 +231,24 @@ app.MapPost("/insert/{code}/{name}", async ([FromRoute] string code, [FromRoute]
         var parameters = new DynamicParameters();
         parameters.Add("@code", code, System.Data.DbType.String, System.Data.ParameterDirection.Input);
         parameters.Add("@name", name, System.Data.DbType.String, System.Data.ParameterDirection.Input);
-       
+
         var result = await testService.ExecuteAsync("InsertData", parameters, trans, 100, System.Data.CommandType.StoredProcedure);
         trans.Commit();
         return Results.Ok(new
         {
-            Result= result
+            Result = result
         });
     }
-   
 })
 .WithName("Insert")
+.WithOpenApi();
+
+app.MapPost("/rabbit", ([FromBody] TestEvent _event, IRabbitMqPublisher rabbitMqPublisher) =>
+{
+    _ = rabbitMqPublisher.PublishAsync(_event, CorrelationContext.Create(Guid.NewGuid()));
+    return Results.Ok("Ok");
+})
+.WithName("RabbitTest")
 .WithOpenApi();
 
 app.Run();

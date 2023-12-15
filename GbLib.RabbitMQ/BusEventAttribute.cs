@@ -4,12 +4,13 @@
     {
         #region Constructors
 
-        public BusEventAttribute(string _exchange, string _queue, string _routingKey, bool usePublicQueue = true)
+        public BusEventAttribute(string _exchange, string _queue, string _routingKey, bool usePublicQueue = true, bool useConfirmSelect = true)
         {
             ExchangeName = _exchange;
             QueueName = _queue;
             RoutingKey = _routingKey;
             UsePublicQueue = usePublicQueue;
+            UseConfirmSelect = useConfirmSelect;
         }
 
         #endregion Constructors
@@ -23,6 +24,8 @@
         public string RoutingKey { get; }
 
         public bool UsePublicQueue { get; set; }
+
+        public bool UseConfirmSelect { get; set; }
 
         #endregion Properties
     }

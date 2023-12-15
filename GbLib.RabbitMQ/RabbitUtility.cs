@@ -49,5 +49,9 @@ namespace GbLib.RabbitMQ
         {
             return typeof(T).GetCustomAttribute<BusEventAttribute>()?.UsePublicQueue ?? false;
         }
+        public bool IsConfirm<T>()
+        {
+            return typeof(T).GetCustomAttribute<BusEventAttribute>()?.UseConfirmSelect ?? true;
+        }
     }
 }

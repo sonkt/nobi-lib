@@ -48,7 +48,11 @@ namespace GbLib.RabbitMQ
         public Task PublishAsync<TEvent>(TEvent _event, ICorrelationContext context)
             where TEvent : IEvent
         {
-            _channel.ConfirmSelect();
+            var isConfirm = _rabbitUtility.IsConfirm<TEvent>();
+            if (isConfirm)
+            {
+                _channel.ConfirmSelect();
+            }
             var exchange = _rabbitUtility.GetExchangeName<TEvent>();
             var routingKey = _rabbitUtility.GetRoutingKey<TEvent>();
             var basicProperties = _channel.CreateBasicProperties();
@@ -56,20 +60,38 @@ namespace GbLib.RabbitMQ
 
             var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(_event));
             var countRetry = 0;
+
             while (_rabbitMqOptions.RetryInterval >= countRetry)
             {
-                _channel.BasicPublish(exchange, routingKey, basicProperties, body);
                 try
                 {
-                    _channel.WaitForConfirmsOrDie(TimeSpan.FromSeconds(_rabbitMqOptions.RequestTimeout));
-                    break;
+                    _channel.BasicPublish(exchange, routingKey, basicProperties, body);
+                    if (isConfirm)
+                    {
+                        try
+                        {
+                            _channel.WaitForConfirmsOrDie(TimeSpan.FromSeconds(_rabbitMqOptions.PublishConfirmTimeout));
+                            break;
+                        }
+                        catch (Exception ex)
+                        {
+                            countRetry++;
+                            _logger.LogError(ex, $"Dữ liệu đẩy lên Rabbit không thành công. Thử lại lần thứ {countRetry}");
+                        }
+                    }
+                    else
+                    {
+                        countRetry = _rabbitMqOptions.RetryInterval + 1;
+                    }
                 }
-                catch
+                catch(Exception ex1)
                 {
+                    _logger.LogError(ex1, $"Dữ liệu đẩy lên Rabbit không thành công 1. Thử lại lần thứ {countRetry}");
                     countRetry++;
-                    _logger.LogError($"Dữ liệu đẩy lên Rabbit không thành công. Thử lại lần thứ {countRetry}");
                 }
+
             }
+
             return Task.CompletedTask;
         }
 
