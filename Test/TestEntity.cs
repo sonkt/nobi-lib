@@ -16,7 +16,5 @@ namespace Test
         public string? TestCode { get; set; }
 
         public string? TestName { get; set; }
-        [Status,Deleted]
-        public new bool IsDeleted { get; set; }
     }
 }

@@ -226,7 +226,6 @@ namespace GbLib.Repositories
         {
             if (typeof(IDeleteEntity).IsAssignableFrom(typeof(TEntity)))
             {
-                ((IDeleteEntity)instance).IsDeleted = true;
                 instance.DeletedDate = DateTime.Now;
                 SetMinDateIfNull(instance);
             }

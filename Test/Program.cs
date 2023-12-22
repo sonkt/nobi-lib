@@ -56,7 +56,7 @@ app.MapGet("/all/{keyword}", async ([FromRoute] string keyword, ITestService tes
     {
         var dictSort = new Dictionary<string, bool>();
         dictSort.Add("TestCode", false);
-        var data = await testService.FindPagedAsync(1, 10, m => m.TestCode.Contains(keyword), dictSort, trans);
+        var data = await testService.FindPagedAsync(1, 10, m => m.TestCode.Contains(keyword) && m.IsDeleted != true, dictSort, trans);
         return Results.Ok(data);
     }
 })
