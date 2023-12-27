@@ -31,9 +31,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GbLib.Entities", "GbLib.Ent
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GbLib.Services", "GbLib.Services\GbLib.Services.csproj", "{40E207AF-2BD4-49D6-945B-E856B195C232}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Test", "Test\Test.csproj", "{B1656C2C-4FCF-4005-904A-CC322B064D49}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test", "Test\Test.csproj", "{B1656C2C-4FCF-4005-904A-CC322B064D49}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GbLib.Repositories", "GbLib.Repositories\GbLib.Repositories.csproj", "{8B1C187B-0CAF-46D6-A01C-C5A635BCE2D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GbLib.Repositories", "GbLib.Repositories\GbLib.Repositories.csproj", "{8B1C187B-0CAF-46D6-A01C-C5A635BCE2D7}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GbLib.RMQ", "GbLib.RMQ\GbLib.RMQ.csproj", "{3FC430C7-840B-43C3-ACC6-E0D6263FF89C}"
+EndProject
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{8BBE3EF7-8395-4112-92FD-7E65C901EBFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -105,6 +109,14 @@ Global
 		{8B1C187B-0CAF-46D6-A01C-C5A635BCE2D7}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8B1C187B-0CAF-46D6-A01C-C5A635BCE2D7}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8B1C187B-0CAF-46D6-A01C-C5A635BCE2D7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3FC430C7-840B-43C3-ACC6-E0D6263FF89C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3FC430C7-840B-43C3-ACC6-E0D6263FF89C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3FC430C7-840B-43C3-ACC6-E0D6263FF89C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3FC430C7-840B-43C3-ACC6-E0D6263FF89C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8BBE3EF7-8395-4112-92FD-7E65C901EBFB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8BBE3EF7-8395-4112-92FD-7E65C901EBFB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8BBE3EF7-8395-4112-92FD-7E65C901EBFB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8BBE3EF7-8395-4112-92FD-7E65C901EBFB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

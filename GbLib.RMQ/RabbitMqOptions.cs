@@ -1,12 +1,8 @@
-﻿namespace GbLib.RabbitMQ
+﻿namespace GbLib.RMQ
 {
     public class RabbitMqOptions
     {
         #region Properties
-
-        public bool Enabled { get; set; }
-        public string Namespace { get; set; }
-        public string ExchangePrefix { get; set; }
         public int Retries { get; set; }
         public int RetryInterval { get; set; }
         public string Username { get; set; }

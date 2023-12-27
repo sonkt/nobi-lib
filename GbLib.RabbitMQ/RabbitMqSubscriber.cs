@@ -42,7 +42,15 @@ namespace GbLib.RabbitMQ
 
         public void Dispose()
         {
+            if (_channel.IsOpen)
+            {
+                _channel.Close();
+            }
             _channel.Dispose();
+            if (_connection.IsOpen)
+            {
+                _connection.Close();
+            }
             _connection.Dispose();
         }
 

@@ -1,13 +1,15 @@
 ﻿using GbLib.Base;
+using GbLib.RMQ;
 
 namespace Test
 {
-    public class TestEventHandler : IEventHandler<TestEvent>
+    public class TestEventHandler : IRabbitEventHandler<TestEvent>
     {
-        public Task HandleAsync(TestEvent _event, ICorrelationContext context)
+        public Task HandleAsync(TestEvent _event)
         {
-            Console.WriteLine($"Đã nhận data từ Rabbit {_event.TestCode} - {_event.TestName}");
+            Console.WriteLine($"[GbLib]: Đã nhận data từ Rabbit {_event.TestCode} - {_event.TestName}");
             return Task.CompletedTask;
         }
+
     }
 }

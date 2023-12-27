@@ -3,8 +3,8 @@ using Autofac.Extensions.DependencyInjection;
 using Dapper;
 using GbLib.Base;
 using GbLib.Jwt;
-using GbLib.RabbitMQ;
 using GbLib.Repositories;
+using GbLib.RMQ;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.Security.Claims;
@@ -16,8 +16,8 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddJwt();
-builder.Services.AddBusRabbitMq();
-builder.Services.AddSingleton<ICorrelationContext,CorrelationContext>();
+builder.Services.AddRabbitMq(builder.Configuration);
+builder.Services.AddSingleton<ICorrelationContext, CorrelationContext>();
 builder.Services.AddDapperOrmRepository<TestDbContext>();
 builder.Services.Scan(scan => scan
            .FromAssemblyOf<ITestService>()
@@ -28,15 +28,13 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
     .ConfigureContainer<ContainerBuilder>(builder =>
     {
         var assembly = typeof(TestEntity).GetTypeInfo().Assembly;
-        builder.RegisterType<RabbitMqPublisher>().As<IRabbitMqPublisher>().OnActivating(e => e.Instance.Init()).SingleInstance();
-        builder.RegisterType<RabbitMqSubscriber>().As<IRabbitMqSubscriber>().InstancePerLifetimeScope();
-        builder.RegisterAssemblyTypes(assembly)
-                .AsClosedTypesOf(typeof(IEventHandler<>))
-                .InstancePerLifetimeScope();
+        builder.UseRabbitMq(assembly);
         builder.RegisterAssemblyTypes(assembly)
             .AsClosedTypesOf(typeof(ICommandHandler<>))
             .InstancePerLifetimeScope();
     });
+builder.Services.AddSingleton<RabbitSender<TestEvent>>();
+builder.Services.AddHostedService<RabbitReceiver<TestEvent>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -47,7 +45,7 @@ if (app.Environment.IsDevelopment())
     app.UseAuthentication();
     app.UseAuthorization();
 }
-app.RabbitMqEventBusSubcriber().SubscribeEvent<TestEvent>();
+
 app.UseHttpsRedirection();
 
 app.MapGet("/all/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
@@ -98,7 +96,7 @@ app.MapGet("/all/{column}/{isDesc}", async ([FromRoute] string column, [FromRout
     {
         var dictSort = new Dictionary<string, bool>();
         dictSort.Add(column, isDesc);
-        var data = await testService.FindAllAsync(m => m.IsDeleted == null, dictSort, trans);
+        var data = await testService.FindAllAsync(m => m.IsDeleted == false, dictSort, trans);
         return Results.Ok(data);
     }
 })
@@ -111,7 +109,7 @@ app.MapGet("/alldata/{numOfRows}/{column}/{isDesc}", async ([FromRoute] int numO
     {
         var dictSort = new Dictionary<string, bool>();
         dictSort.Add(column, isDesc);
-        var data = await testService.FindAllAsync(m => m.IsDeleted == null, dictSort, numOfRows, trans);
+        var data = await testService.FindAllAsync(m => m.IsDeleted == false, dictSort, numOfRows, trans);
         return Results.Ok(data);
     }
 })
@@ -122,7 +120,7 @@ app.MapGet("/alldata/{numOfRows}", async ([FromRoute] int numOfRows, ITestServic
 {
     using (var trans = testService.GetDbTransaction())
     {
-        var data = await testService.FindAllAsync(m => m.IsDeleted == null, null, numOfRows, trans);
+        var data = await testService.FindAllAsync(m => m.IsDeleted == false, null, numOfRows, trans);
         return Results.Ok(data);
     }
 })
@@ -243,9 +241,9 @@ app.MapPost("/insert/{code}/{name}", async ([FromRoute] string code, [FromRoute]
 .WithName("Insert")
 .WithOpenApi();
 
-app.MapPost("/rabbit", ([FromBody] TestEvent _event, IRabbitMqPublisher rabbitMqPublisher) =>
+app.MapPost("/rabbit", ([FromBody] TestEvent _event, RabbitSender<TestEvent> _rbSender) =>
 {
-    _ = rabbitMqPublisher.PublishAsync(_event, CorrelationContext.Create(Guid.NewGuid()));
+    _rbSender.PublishAsync(_event);
     return Results.Ok("Ok");
 })
 .WithName("RabbitTest")

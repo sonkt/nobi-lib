@@ -1,20 +1,31 @@
 #See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
 
-FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
+FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+USER app
 WORKDIR /app
-EXPOSE 80
-EXPOSE 443
+EXPOSE 8080
+EXPOSE 8081
 
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Test/Test.csproj", "Test/"]
-RUN dotnet restore "Test/Test.csproj"
+COPY ["GbLib.Base/GbLib.Base.csproj", "GbLib.Base/"]
+COPY ["GbLib.Extensions/GbLib.Extensions.csproj", "GbLib.Extensions/"]
+COPY ["GbLib.Entities/GbLib.Entities.csproj", "GbLib.Entities/"]
+COPY ["GbLib.Jwt/GbLib.Jwt.csproj", "GbLib.Jwt/"]
+COPY ["GbLib.Repositories/GbLib.Repositories.csproj", "GbLib.Repositories/"]
+COPY ["GbLib.RMQ/GbLib.RMQ.csproj", "GbLib.RMQ/"]
+COPY ["GbLib.Services/GbLib.Services.csproj", "GbLib.Services/"]
+COPY ["GbLib.ExcelLib/GbLib.ExcelLib.csproj", "GbLib.ExcelLib/"]
+RUN dotnet restore "./Test/./Test.csproj"
 COPY . .
 WORKDIR "/src/Test"
-RUN dotnet build "Test.csproj" -c Release -o /app/build
+RUN dotnet build "./Test.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 FROM build AS publish
-RUN dotnet publish "Test.csproj" -c Release -o /app/publish /p:UseAppHost=false
+ARG BUILD_CONFIGURATION=Release
+RUN dotnet publish "./Test.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
 FROM base AS final
 WORKDIR /app
