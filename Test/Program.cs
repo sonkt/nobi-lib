@@ -99,7 +99,7 @@ app.MapGet("/all/{column}/{isDesc}", async ([FromRoute] string column, [FromRout
         var data = await testService.FindAllAsync(m => m.IsDeleted == false, dictSort, trans);
         return Results.Ok(data);
     }
-})
+})  
 .WithName("AllData")
 .WithOpenApi();
 

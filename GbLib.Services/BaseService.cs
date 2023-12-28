@@ -1,11 +1,9 @@
 ﻿using Dapper;
 using GbLib.Base;
-using GbLib.Base.Helpers;
 using GbLib.Entities;
 using GbLib.ExcelLib;
 using GbLib.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using Microsoft.AspNetCore.Components.Routing;
 using MoreLinq;
 using OfficeOpenXml.Style;
 using System.Data;
@@ -15,7 +13,7 @@ using System.Linq.Expressions;
 namespace GbLib.Services
 {
     public abstract class BaseService<TEntity, TKey> : IBaseService<TEntity, TKey>
-             where TEntity : class, IAuditEntity<TKey>
+             where TEntity : class, IEntityBase<TKey>
     {
         #region Fields
 
@@ -470,7 +468,7 @@ namespace GbLib.Services
             {
                 var dicSort = new Dictionary<string, bool>();
                 dicSort.Add("CreatedDate", true);
-                var dataPaged = await FindPagedAsync(1, int.MaxValue, m => m.CreatedDate > DateTimeHelper.MinSystemDate, dicSort, dbTransaction);
+                var dataPaged = await FindPagedAsync(1, int.MaxValue, m => true, dicSort, dbTransaction);
                 if (dataPaged.TotalCount > 0)
                 {
                     listData = dataPaged.Items.ToList<object>();

@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 namespace GbLib.Repositories
 {
     public class DapperOrmRepository<TEntity, TId> : DapperRepository<TEntity>, IDapperOrmRepository<TEntity, TId>
-         where TEntity : class, IAuditEntity<TId>
+         where TEntity : class, IEntityBase<TId>
     {
         public DapperOrmRepository(IDbConnectionFactory dbConnectionFactory, ISqlGenerator<TEntity> sqlGenerator) : base(dbConnectionFactory.OpenDbConnection(), sqlGenerator)
         {
@@ -226,7 +226,7 @@ namespace GbLib.Repositories
         {
             if (typeof(IDeleteEntity).IsAssignableFrom(typeof(TEntity)))
             {
-                instance.DeletedDate = DateTime.Now;
+                ((IDeleteEntity)instance).DeletedDate = DateTime.Now;
                 SetMinDateIfNull(instance);
             }
             AutoGuidKeyValueIfNullOrEmpty(instance);

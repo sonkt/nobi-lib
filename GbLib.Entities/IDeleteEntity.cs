@@ -6,6 +6,8 @@ namespace GbLib.Entities
     {
         #region Properties
         bool IsDeleted { get; set; }
+        DateTime? DeletedDate { get; set; }
+        Guid? DeletedUser { get; set; }
 
         #endregion Properties
     }
