@@ -2,7 +2,6 @@
 using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
-using OpenTracing;
 
 namespace GbLib.Base.Mvc
 {
@@ -16,18 +15,15 @@ namespace GbLib.Base.Mvc
 
         public readonly IMediator _mediator;
 
-        public readonly ITracer _tracer;
-
         #endregion Fields
 
         #region Constructors
 
-        public BaseApiController(ILogger<BaseApiController> logger, IMediator mediator, IMapper mapper, ITracer tracer)
+        public BaseApiController(ILogger<BaseApiController> logger, IMediator mediator, IMapper mapper)
         {
             _logger = logger;
             _mediator = mediator;
             _mapper = mapper;
-            _tracer = tracer;
         }
 
         protected virtual async Task<FileContentResult> GetFileFromUrl(string url, string downloadName)
