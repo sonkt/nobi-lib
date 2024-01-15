@@ -1,9 +1,9 @@
 ﻿using GbLib.Base;
 using GbLib.RMQ;
 
-namespace Test
+namespace Test.Application.RabbitMqEvent
 {
-    [BusEvent("test_event", "test_event", true, false)]
+    [BusEvent("test_exchange","test_event", "test_event", true, false)]
     public class TestEvent : IRabbitEvent
     {
         public string TestCode { get; set; }

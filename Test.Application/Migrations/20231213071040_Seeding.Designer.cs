@@ -9,18 +9,18 @@ using Test;
 
 #nullable disable
 
-namespace Test.Migrations
+namespace Test.Application.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20231228090145_Update_IsDeleted")]
-    partial class Update_IsDeleted
+    [Migration("20231213071040_Seeding")]
+    partial class Seeding
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.0")
+                .HasAnnotation("ProductVersion", "7.0.14")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -50,7 +50,7 @@ namespace Test.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool?>("IsDeleted")
+                    b.Property<bool>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("TestCode")

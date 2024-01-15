@@ -8,11 +8,11 @@
     <Title>GbLib.Jwt</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>The library for Authentication</Description>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
 

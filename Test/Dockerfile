@@ -10,14 +10,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["Test/Test.csproj", "Test/"]
-COPY ["GbLib.Base/GbLib.Base.csproj", "GbLib.Base/"]
-COPY ["GbLib.Extensions/GbLib.Extensions.csproj", "GbLib.Extensions/"]
-COPY ["GbLib.Entities/GbLib.Entities.csproj", "GbLib.Entities/"]
 COPY ["GbLib.Jwt/GbLib.Jwt.csproj", "GbLib.Jwt/"]
-COPY ["GbLib.Repositories/GbLib.Repositories.csproj", "GbLib.Repositories/"]
-COPY ["GbLib.RMQ/GbLib.RMQ.csproj", "GbLib.RMQ/"]
-COPY ["GbLib.Services/GbLib.Services.csproj", "GbLib.Services/"]
-COPY ["GbLib.ExcelLib/GbLib.ExcelLib.csproj", "GbLib.ExcelLib/"]
+COPY ["Test.Application/Test.Application.csproj", "Test.Application/"]
 RUN dotnet restore "./Test/./Test.csproj"
 COPY . .
 WORKDIR "/src/Test"

@@ -3,7 +3,7 @@ using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Test
+namespace Test.Application
 {
 
     [Table("TestEntities")]

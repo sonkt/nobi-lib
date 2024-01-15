@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace GbLib.RMQ
 {
-    public class RabbitSender<T> where T: IRabbitEvent
+    public class RabbitSender<T> where T : IRabbitEvent
     {
         private readonly IModel _channel;
         private readonly RabbitMqOptions _options;
@@ -29,12 +29,13 @@ namespace GbLib.RMQ
             var body = Encoding.UTF8.GetBytes(message);
             var basicProperties = _channel.CreateBasicProperties();
             basicProperties.Persistent = _options.PersistentDeliveryMode;
+            var exchangeName = _rabbitUtility.GetExchangeName<T>();
             var countRetry = 0;
             while (_options.RetryInterval >= countRetry)
             {
                 try
                 {
-                    _channel.BasicPublish(exchange: _options.Exchange.Name, routingKey: key, basicProperties: basicProperties, body: body);
+                    _channel.BasicPublish(exchange: exchangeName, routingKey: key, basicProperties: basicProperties, body: body);
                     if (isConfirm)
                     {
                         try
@@ -57,7 +58,7 @@ namespace GbLib.RMQ
                     countRetry++;
                 }
             }
-            Console.WriteLine($"[GbLib]: Đã gửi event {nameof(T)}. Routing Key:{key}");
+            Console.WriteLine($"[GbLib]: Đã gửi event {typeof(T).Name}. Routing Key:{key}");
         }
     }
 }

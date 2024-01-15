@@ -1,4 +1,4 @@
-﻿namespace Test
+﻿namespace Test.Application
 {
     public class TestModel
     {

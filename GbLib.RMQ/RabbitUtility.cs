@@ -8,30 +8,33 @@ namespace GbLib.RMQ
     public class RabbitUtility
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly string _defaultNamespace;
 
         public RabbitUtility(IServiceProvider serviceProvider, RabbitMqOptions options)
         {
             _serviceProvider = serviceProvider;
+            _defaultNamespace = options.Exchange.Name;
         }
-
+        public string GetExchangeName<T>()
+        {
+            var _exchange = typeof(T).GetCustomAttribute<BusEventAttribute>()?.ExchangeName ?? _defaultNamespace;
+            return $"{_exchange}".ToLowerInvariant();
+        }
 
         public string GetRoutingKey<T>()
         {
-            var options = _serviceProvider.GetService<RabbitMqOptions>();
             var _routingKey = typeof(T).GetCustomAttribute<BusEventAttribute>()?.RoutingKey ?? typeof(T).Name;
             _routingKey = string.IsNullOrWhiteSpace(_routingKey) ? string.Empty : $"{_routingKey}";
-
-            return $"{options?.Exchange.Name}_{_routingKey}".ToLowerInvariant();
+            return $"{_routingKey}".ToLowerInvariant();
         }
 
         public string GetQueueName<T>()
         {
-            var options = _serviceProvider.GetService<RabbitMqOptions>();
             var name = Dns.GetHostName();
             var ip = Dns.GetHostEntry(name).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
             var _queue = typeof(T).GetCustomAttribute<BusEventAttribute>()?.QueueName ?? typeof(T).Name;
             var isPublicQueue = typeof(T).GetCustomAttribute<BusEventAttribute>()?.UsePublicQueue ?? false;
-            return isPublicQueue ? $"{options?.Exchange.Name}_{_queue}".ToLowerInvariant() : $"{ip}_{options?.Exchange.Name}_{_queue}".ToLowerInvariant();
+            return isPublicQueue ? $"{_queue}".ToLowerInvariant() : $"{ip}_{_queue}".ToLowerInvariant();
         }
 
         public bool IsPublic<T>()

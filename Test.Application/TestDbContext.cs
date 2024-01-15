@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Test
+namespace Test.Application
 {
     public class TestDbContext:DbContext
     {

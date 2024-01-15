@@ -8,7 +8,8 @@ using GbLib.RMQ;
 using Microsoft.AspNetCore.Mvc;
 using System.Reflection;
 using System.Security.Claims;
-using Test;
+using Test.Application;
+using Test.Application.RabbitMqEvent;
 
 var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
@@ -35,6 +36,8 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
     });
 builder.Services.AddSingleton<RabbitSender<TestEvent>>();
 builder.Services.AddHostedService<RabbitReceiver<TestEvent>>();
+builder.Services.AddSingleton<RabbitSender<PingEvent>>();
+builder.Services.AddHostedService<RabbitReceiver<PingEvent>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -247,6 +250,15 @@ app.MapPost("/rabbit", ([FromBody] TestEvent _event, RabbitSender<TestEvent> _rb
     return Results.Ok("Ok");
 })
 .WithName("RabbitTest")
+.WithOpenApi();
+
+
+app.MapPost("/rabbit/ping", ([FromBody] PingEvent _event, RabbitSender<PingEvent> _rbSender) =>
+{
+    _rbSender.PublishAsync(_event);
+    return Results.Ok("Ok");
+})
+.WithName("RabbitPingTest")
 .WithOpenApi();
 
 app.Run();

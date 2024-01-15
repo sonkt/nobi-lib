@@ -1,7 +1,7 @@
 ﻿using GbLib.Services;
 using GbLib.Repositories;
 
-namespace Test
+namespace Test.Application
 {
     public class TestService : BaseService<TestEntity, Guid>,ITestService
     {

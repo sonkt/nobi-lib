@@ -40,7 +40,7 @@ namespace GbLib.RMQ
         {
             try
             {
-                var exchangeName = _rabbitMqOptions.Exchange.Name;
+                var exchangeName = _rabbitUtility.GetExchangeName<T>();
                 var queueName = _rabbitUtility.GetQueueName<T>();
                 var routingKey = _rabbitUtility.GetRoutingKey<T>();
                 _channel.ExchangeDeclare(exchangeName, _rabbitMqOptions.Exchange.Type, _rabbitMqOptions.Exchange.Durable, _rabbitMqOptions.Exchange.AutoDelete);
@@ -52,11 +52,11 @@ namespace GbLib.RMQ
                 _channel.BasicConsume(queueName,
                             autoAck: false,
                             consumer: consummerAsync);
-                Console.WriteLine($"[GbLib]: Bắt đầu đợi Event {nameof(T)}");
+                Console.WriteLine($"[GbLib]: Bắt đầu đợi Event {typeof(T).Name}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"[GbLib]: RabbitMQ receiver: Có lỗi khi subscribe event: {nameof(T)}. {ex.Message}");
+                Console.WriteLine($"[GbLib]: RabbitMQ receiver: Có lỗi khi subscribe event: {typeof(T).Name}. {ex.Message}");
             }
         }
 
@@ -84,6 +84,10 @@ namespace GbLib.RMQ
                 {
                     Console.WriteLine($"[GbLib]: Event không có dữ liệu {message}");
                 }
+            }
+            else
+            {
+                Console.WriteLine($"[GbLib]: EventHandler không tồn tại {message}");
             }
         }
 

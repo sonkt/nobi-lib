@@ -3,24 +3,21 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Test;
 
 #nullable disable
 
-namespace Test.Migrations
+namespace Test.Application.Migrations
 {
     [DbContext(typeof(TestDbContext))]
-    [Migration("20231213071040_Seeding")]
-    partial class Seeding
+    partial class TestDbContextModelSnapshot : ModelSnapshot
     {
-        /// <inheritdoc />
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "7.0.14")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
@@ -50,7 +47,7 @@ namespace Test.Migrations
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<bool>("IsDeleted")
+                    b.Property<bool?>("IsDeleted")
                         .HasColumnType("bit");
 
                     b.Property<string>("TestCode")

@@ -1,6 +1,6 @@
 ﻿using GbLib.Services;
 
-namespace Test
+namespace Test.Application
 {
     public interface ITestService : IBaseService<TestEntity, Guid>
     {

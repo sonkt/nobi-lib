@@ -1,7 +1,8 @@
 ﻿using GbLib.Base;
 using GbLib.RMQ;
+using Test.Application.RabbitMqEvent;
 
-namespace Test
+namespace Test.Application
 {
     public class TestEventHandler : IRabbitEventHandler<TestEvent>
     {

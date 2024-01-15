@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace Test.Migrations
+namespace Test.Application.Migrations
 {
     /// <inheritdoc />
     public partial class Update_IsDeleted : Migration

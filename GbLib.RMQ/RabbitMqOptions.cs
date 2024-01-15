@@ -3,6 +3,7 @@
     public class RabbitMqOptions
     {
         #region Properties
+        
         public int Retries { get; set; }
         public int RetryInterval { get; set; }
         public string Username { get; set; }
