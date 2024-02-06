@@ -18,6 +18,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\GbLib.Jwt\GbLib.Jwt.csproj" />
+		<ProjectReference Include="..\GbLib.Kafka\GbLib.Kafka.csproj" />
 		<ProjectReference Include="..\Test.Application\Test.Application.csproj" />
 	</ItemGroup>
 

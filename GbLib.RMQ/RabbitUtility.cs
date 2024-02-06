@@ -8,12 +8,14 @@ namespace GbLib.RMQ
     public class RabbitUtility
     {
         private readonly IServiceProvider _serviceProvider;
+        private readonly RabbitMqOptions _rabbitMqOptions;
         private readonly string _defaultNamespace;
 
         public RabbitUtility(IServiceProvider serviceProvider, RabbitMqOptions options)
         {
             _serviceProvider = serviceProvider;
             _defaultNamespace = options.Exchange.Name;
+            _rabbitMqOptions = options;
         }
         public string GetExchangeName<T>()
         {
@@ -32,7 +34,7 @@ namespace GbLib.RMQ
         {
             var name = Dns.GetHostName();
             var ip = Dns.GetHostEntry(name).AddressList.FirstOrDefault(x => x.AddressFamily == AddressFamily.InterNetwork);
-            var _queue = typeof(T).GetCustomAttribute<BusEventAttribute>()?.QueueName ?? typeof(T).Name;
+            var _queue =$"{_rabbitMqOptions.Queue.Prefix}{typeof(T).GetCustomAttribute<BusEventAttribute>()?.QueueName ?? typeof(T).Name}";
             var isPublicQueue = typeof(T).GetCustomAttribute<BusEventAttribute>()?.UsePublicQueue ?? false;
             return isPublicQueue ? $"{_queue}".ToLowerInvariant() : $"{ip}_{_queue}".ToLowerInvariant();
         }

@@ -37,7 +37,7 @@ namespace GbLib.Kafka
                     SecurityProtocol = SecurityProtocol.SaslPlaintext,
                     SaslUsername = _kafkaOptions.UserName,
                     SaslPassword = _kafkaOptions.Password,
-                    MessageMaxBytes = 40 * 1024 * 1024
+                    MessageMaxBytes = _kafkaOptions.MessageMaxBytes != 0 ? _kafkaOptions.MessageMaxBytes : 40 * 1024 * 1024
                 };
                 services.AddSingleton(producerConfig);
 

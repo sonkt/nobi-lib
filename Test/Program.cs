@@ -3,6 +3,7 @@ using Autofac.Extensions.DependencyInjection;
 using Dapper;
 using GbLib.Base;
 using GbLib.Jwt;
+using GbLib.Kafka;
 using GbLib.Repositories;
 using GbLib.RMQ;
 using Microsoft.AspNetCore.Mvc;
@@ -18,6 +19,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddJwt();
 builder.Services.AddRabbitMq(builder.Configuration);
+builder.Services.AddBusKafkaConfig();
 builder.Services.AddSingleton<ICorrelationContext, CorrelationContext>();
 builder.Services.AddDapperOrmRepository<TestDbContext>();
 builder.Services.Scan(scan => scan
@@ -29,6 +31,7 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
     .ConfigureContainer<ContainerBuilder>(builder =>
     {
         var assembly = typeof(TestEntity).GetTypeInfo().Assembly;
+        builder.BuildContainerKafkaEventBus(assembly);
         builder.UseRabbitMq(assembly);
         builder.RegisterAssemblyTypes(assembly)
             .AsClosedTypesOf(typeof(ICommandHandler<>))
@@ -48,7 +51,7 @@ if (app.Environment.IsDevelopment())
     app.UseAuthentication();
     app.UseAuthorization();
 }
-
+app.KafkaEventBusSubcriber().ConsumeEvent<KafkaTestEvent>();
 app.UseHttpsRedirection();
 
 app.MapGet("/all/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
@@ -259,6 +262,15 @@ app.MapPost("/rabbit/ping", ([FromBody] PingEvent _event, RabbitSender<PingEvent
     return Results.Ok("Ok");
 })
 .WithName("RabbitPingTest")
+.WithOpenApi();
+
+
+app.MapPost("/kafka/ping", ([FromBody] KafkaTestEvent _event, KafkaPublisher _kkSender) =>
+{
+    _=_kkSender.PublishAsync(_event);
+    return Results.Ok("Ok");
+})
+.WithName("KafkaPingTest")
 .WithOpenApi();
 
 app.Run();

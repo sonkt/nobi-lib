@@ -33,6 +33,7 @@
 
         public class QueueOption
         {
+            public string Prefix { get; set; }
             public bool AutoDelete { get; set; }
             public bool Durable { get; set; }
             public bool Exclusive { get; set; }

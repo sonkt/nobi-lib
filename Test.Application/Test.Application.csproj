@@ -12,4 +12,8 @@
     <PackageReference Include="GbLib.Services" Version="1.1.1" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\GbLib.Kafka\GbLib.Kafka.csproj" />
+  </ItemGroup>
+
 </Project>
