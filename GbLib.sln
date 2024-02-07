@@ -37,7 +37,9 @@ Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-co
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Test.Application", "Test.Application\Test.Application.csproj", "{BDD712E9-43E5-461C-860A-6BD2F1E9E98E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GbLib.Analytics", "GbLib.Analytics\GbLib.Analytics.csproj", "{7E6B0676-A747-4E1B-A00C-5307171BCF07}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GbLib.Analytics", "GbLib.Analytics\GbLib.Analytics.csproj", "{7E6B0676-A747-4E1B-A00C-5307171BCF07}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GbLib.Worker", "GbLib.Worker\GbLib.Worker.csproj", "{288DC048-8E5D-49A2-AB71-99A2B66593A1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -117,6 +119,10 @@ Global
 		{7E6B0676-A747-4E1B-A00C-5307171BCF07}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7E6B0676-A747-4E1B-A00C-5307171BCF07}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7E6B0676-A747-4E1B-A00C-5307171BCF07}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288DC048-8E5D-49A2-AB71-99A2B66593A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288DC048-8E5D-49A2-AB71-99A2B66593A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288DC048-8E5D-49A2-AB71-99A2B66593A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288DC048-8E5D-49A2-AB71-99A2B66593A1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

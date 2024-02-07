@@ -3,7 +3,7 @@
     public class RabbitMqOptions
     {
         #region Properties
-        
+        public string Prefix { get; set; }
         public int Retries { get; set; }
         public int RetryInterval { get; set; }
         public string Username { get; set; }
@@ -33,7 +33,6 @@
 
         public class QueueOption
         {
-            public string Prefix { get; set; }
             public bool AutoDelete { get; set; }
             public bool Durable { get; set; }
             public bool Exclusive { get; set; }
