@@ -27,6 +27,8 @@ namespace GbLib.MongoDb.Services
 
         Task<TEntity> GetByCondition(FilterDefinition<TEntity> predicate, string collectionName = "");
 
+        IMongoCollection<TEntity> GetCollection(string collectionName = "");
+
         #endregion Methods
     }
 }

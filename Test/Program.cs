@@ -3,10 +3,12 @@ using Autofac.Extensions.DependencyInjection;
 using Dapper;
 using GbLib.Base;
 using GbLib.Jwt;
-using GbLib.Kafka;
+using GbLib.MongoDb;
+using GbLib.MongoDb.Context;
 using GbLib.Repositories;
 using GbLib.RMQ;
 using Microsoft.AspNetCore.Mvc;
+using MongoDB.Driver;
 using System.Reflection;
 using System.Security.Claims;
 using Test.Application;
@@ -18,8 +20,9 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddJwt();
+builder.Services.AddScoped<MongoDbContext>();
+builder.Services.AddMongoRepository();
 builder.Services.AddRabbitMq(builder.Configuration);
-builder.Services.AddBusKafkaConfig();
 builder.Services.AddSingleton<ICorrelationContext, CorrelationContext>();
 builder.Services.AddDapperOrmRepository<TestDbContext>();
 builder.Services.Scan(scan => scan
@@ -31,7 +34,6 @@ builder.Host.UseServiceProviderFactory(new AutofacServiceProviderFactory())
     .ConfigureContainer<ContainerBuilder>(builder =>
     {
         var assembly = typeof(TestEntity).GetTypeInfo().Assembly;
-        builder.BuildContainerKafkaEventBus(assembly);
         builder.UseRabbitMq(assembly);
         builder.RegisterAssemblyTypes(assembly)
             .AsClosedTypesOf(typeof(ICommandHandler<>))
@@ -44,14 +46,11 @@ builder.Services.AddHostedService<RabbitReceiver<PingEvent>>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-    app.UseAuthentication();
-    app.UseAuthorization();
-}
-app.KafkaEventBusSubcriber().ConsumeEvent<KafkaTestEvent>();
+
+app.UseSwagger();
+app.UseSwaggerUI();
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseHttpsRedirection();
 
 app.MapGet("/all/{keyword}", async ([FromRoute] string keyword, ITestService testService) =>
@@ -105,7 +104,7 @@ app.MapGet("/all/{column}/{isDesc}", async ([FromRoute] string column, [FromRout
         var data = await testService.FindAllAsync(m => m.IsDeleted == false, dictSort, trans);
         return Results.Ok(data);
     }
-})  
+})
 .WithName("AllData")
 .WithOpenApi();
 
@@ -255,7 +254,6 @@ app.MapPost("/rabbit", ([FromBody] TestEvent _event, RabbitSender<TestEvent> _rb
 .WithName("RabbitTest")
 .WithOpenApi();
 
-
 app.MapPost("/rabbit/ping", ([FromBody] PingEvent _event, RabbitSender<PingEvent> _rbSender) =>
 {
     _rbSender.PublishAsync(_event);
@@ -264,13 +262,45 @@ app.MapPost("/rabbit/ping", ([FromBody] PingEvent _event, RabbitSender<PingEvent
 .WithName("RabbitPingTest")
 .WithOpenApi();
 
-
-app.MapPost("/kafka/ping", ([FromBody] KafkaTestEvent _event, KafkaPublisher _kkSender) =>
+app.MapGet("/mongodb/testgroup", (ICompanyLoginDailyService companyService) =>
 {
-    _=_kkSender.PublishAsync(_event);
-    return Results.Ok("Ok");
+    var collection = companyService.GetCollection().AsQueryable();
+    var companyData = collection.Where(m=>m.FK_Date== 1708128000).SelectMany(m => m.MenuCounts, (m, a) => new
+    {
+        comid = m.FK_CompanyId,
+        date = m.FK_Date,
+        menu = a.FK_MenuId
+    })
+    .GroupBy(g=>g.comid)
+    .Select(g=>new
+    {
+        comid = g.Key,
+        count = g.Select(m => m.menu).Distinct().Count()
+    }).Where(m=>m.count>0);
+
+    return Results.Ok(companyData);
 })
-.WithName("KafkaPingTest")
+.WithName("MongoGroup")
+.WithOpenApi();
+
+app.MapGet("/mongodb/action", (IActionService action) =>
+{
+    var tracklog = action.GetCollection().Aggregate()
+    .Match(m => m.ActionTime == 1708161395)
+    .Group(a => a.FK_CompanyId,
+        track => new {
+            comid= track.Key,
+            countMenu = track.Select(m=>m.FK_MenuId).Distinct().Count()
+        }
+    )
+    .SortBy(m=>m.comid)
+    .Match(m=>m.countMenu>0)
+    .Skip(0)
+    .Limit(10)
+    .ToList();
+    return Results.Ok(tracklog);
+})
+.WithName("ActionGroup")
 .WithOpenApi();
 
 app.Run();

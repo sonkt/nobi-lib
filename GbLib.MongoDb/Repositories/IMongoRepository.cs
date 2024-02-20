@@ -38,6 +38,8 @@ namespace GbLib.MongoDb.Repositories
 
         int RecordCount(FilterDefinition<TEntity> predicate, string collectionName = "");
 
+        IMongoCollection<TEntity> GetCollection(string collectionName = "");
+
         #endregion Query Action
     }
 }

@@ -35,6 +35,11 @@ namespace GbLib.MongoDb.Services
             return await _repository.GetObjectByIdAsync(id, collectionName);
         }
 
+        public IMongoCollection<TEntity> GetCollection(string collectionName = "")
+        {
+           return _repository.GetCollection(collectionName);
+        }
+
         public virtual async Task<PaginationSet<TEntity>> GetListPagedAsync(int pageNumber, int rowsPerPage, FilterDefinition<TEntity> predicate, SortDefinition<TEntity> sortColumn, string collectionName = "")
         {
             return await _repository.GetListPagedAsync(pageNumber, rowsPerPage, predicate, sortColumn, collectionName);

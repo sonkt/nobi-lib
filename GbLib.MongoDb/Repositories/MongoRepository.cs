@@ -148,6 +148,11 @@ namespace GbLib.MongoDb.Repositories
             return await FindListAsync(listIds, collectionName);
         }
 
+        public IMongoCollection<TEntity> GetCollection(string collectionName = "")
+        {
+            return _mongoDbContext.Collection<TEntity>(collectionName);
+        }
+
         #endregion Public Methods
     }
 }
