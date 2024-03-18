@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace GbLib.Worker
 {
@@ -16,9 +17,9 @@ namespace GbLib.Worker
         {
             _logger = logger;
         }
-        public async Task WaitForNextSchedule(string cronExpression)
+        public virtual async Task WaitForNextSchedule(string cronExpression, CronFormat cronFormat= CronFormat.Standard)
         {
-            var parsedExp = CronExpression.Parse(cronExpression);
+            var parsedExp = CronExpression.Parse(cronExpression, cronFormat);
             var currentUtcTime = DateTimeOffset.UtcNow.UtcDateTime;
             var occurenceTime = parsedExp.GetNextOccurrence(currentUtcTime);
             var delay = occurenceTime.GetValueOrDefault() - currentUtcTime;

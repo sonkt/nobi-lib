@@ -1,7 +1,9 @@
 ﻿using GbLib.Base;
+using GbLib.ExcelLib;
 using GbLib.MongoDb.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using System.Data;
 
 namespace GbLib.MongoDb.Services
 {
@@ -28,6 +30,22 @@ namespace GbLib.MongoDb.Services
         Task<TEntity> GetByCondition(FilterDefinition<TEntity> predicate, string collectionName = "");
 
         IMongoCollection<TEntity> GetCollection(string collectionName = "");
+
+        Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction, bool hasIndexColumn);
+
+        Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, IDbTransaction? dbTransaction, bool hasIndexColumn);
+
+        Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, bool hasIndexColumn);
+
+        Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction);
+
+        Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, bool hasIndexColumn);
+
+        Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle);
+
+        List<ExcelGridColumn> GetExcelGridColumn(List<ExcelColumnModel> listColumns, bool listHasIndexColumn = false);
+
+        List<ExcelGridColumn> GetExcelGridColumn(object entity, bool listHasIndexColumn = false);
 
         #endregion Methods
     }
