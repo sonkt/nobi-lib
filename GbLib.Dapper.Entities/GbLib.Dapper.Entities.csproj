@@ -4,14 +4,14 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Title>GbLib.Entities</Title>
-    <Version>1.1.1</Version>
+    <Title>GbLib.Dapper.Entities</Title>
+    <Version>1.1.2</Version>
     <Authors>$(AssemblyName)Sơn Khiếu &amp; Contributors</Authors>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="MicroOrm.Dapper.Repositories" Version="1.26.0" />
-    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.2" />
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.2.1" />
   </ItemGroup>
 
   <ItemGroup>

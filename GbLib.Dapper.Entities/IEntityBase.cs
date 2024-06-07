@@ -1,4 +1,4 @@
-﻿namespace GbLib.DapperOrm.Entities
+﻿namespace GbLib.Dapper.Entities
 {
     public interface IEntityBase<TKey>
     {

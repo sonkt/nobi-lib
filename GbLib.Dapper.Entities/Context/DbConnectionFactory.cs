@@ -4,7 +4,7 @@ using System.Data;
 using System.Data.Common;
 using System.Reflection;
 
-namespace GbLib.Entities.Context
+namespace GbLib.Dapper.Entities.Context
 {
     public class DbConnectionFactory : IDbConnectionFactory
     {

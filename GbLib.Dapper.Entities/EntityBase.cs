@@ -1,8 +1,9 @@
 ﻿using GbLib.Base;
 using GbLib.Base.Attributes;
+using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System.Collections.Concurrent;
 
-namespace GbLib.DapperOrm.Entities
+namespace GbLib.Dapper.Entities
 {
     public abstract class AuditEntity<TKey> : DeleteEntity<TKey>, IAuditEntity<TKey>
     {
@@ -20,13 +21,6 @@ namespace GbLib.DapperOrm.Entities
 
         public string? Description { get; set; }
 
-        [IgnoreUpdate]
-        [IgnoreInsert]
-        public Guid? DeletedUser { get; set; }
-
-        [IgnoreUpdate]
-        [IgnoreInsert]
-        public DateTime? DeletedDate { get; set; }
 
         #endregion Properties
     }
@@ -34,8 +28,16 @@ namespace GbLib.DapperOrm.Entities
     public abstract class DeleteEntity<TKey> : EntityBase<TKey>, IDeleteEntity<TKey>
     {
         #region Properties
+        [Status,Deleted]
+        public bool IsDeleted { get; set; } = false;
 
-        public bool? IsDeleted { get; set; }
+        [IgnoreUpdate]
+        [IgnoreInsert]
+        public Guid? DeletedUser { get; set; }
+
+        [IgnoreUpdate]
+        [IgnoreInsert]
+        public DateTime? DeletedDate { get; set; }
 
         #endregion Properties
     }

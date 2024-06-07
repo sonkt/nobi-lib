@@ -1,4 +1,4 @@
-﻿namespace GbLib.DapperOrm.Context
+﻿namespace GbLib.Dapper.Entities.Context
 {
     public class DbOptions
     {

@@ -4,15 +4,12 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
-    <Title>GbLib.DapperOrm</Title>
+    <Title>GbLib.Dapper.Repositories</Title>
+    <Version>1.1.2</Version>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
-    <Description>DapperOrm</Description>
-    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
-    <Version>1.1.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Dapper" Version="2.1.28" />
     <PackageReference Include="MicroOrm.Dapper.Repositories" Version="1.26.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.1" />
@@ -20,7 +17,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\GbLib.Base\GbLib.Base.csproj" />
-    <ProjectReference Include="..\GbLib.ExcelLib\GbLib.ExcelLib.csproj" />
+    <ProjectReference Include="..\GbLib.Dapper.Entities\GbLib.Dapper.Entities.csproj" />
   </ItemGroup>
 
 </Project>

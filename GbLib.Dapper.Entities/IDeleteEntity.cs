@@ -1,6 +1,6 @@
 ﻿using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 
-namespace GbLib.Entities
+namespace GbLib.Dapper.Entities
 {
     public interface IDeleteEntity
     {

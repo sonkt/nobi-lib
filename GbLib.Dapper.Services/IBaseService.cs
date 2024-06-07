@@ -1,12 +1,12 @@
 ﻿using Dapper;
 using GbLib.Base;
-using GbLib.Entities;
+using GbLib.Dapper.Entities;
 using GbLib.ExcelLib;
 using Microsoft.Data.SqlClient;
 using System.Data;
 using System.Linq.Expressions;
 
-namespace GbLib.Services
+namespace GbLib.Dapper.Services
 {
     public interface IBaseService<TEntity, TKey> where TEntity : class, IEntityBase<TKey>
     {

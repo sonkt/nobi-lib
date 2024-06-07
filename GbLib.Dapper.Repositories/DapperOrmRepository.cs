@@ -1,14 +1,14 @@
 ﻿using Dapper;
 using GbLib.Base.Helpers;
-using GbLib.Entities;
-using GbLib.Entities.Context;
+using GbLib.Dapper.Entities;
+using GbLib.Dapper.Entities.Context;
 using MicroOrm.Dapper.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
 using System.ComponentModel.DataAnnotations;
 using System.Data;
 using System.Linq.Expressions;
 
-namespace GbLib.Repositories
+namespace GbLib.Dapper.Repositories
 {
     public class DapperOrmRepository<TEntity, TId> : DapperRepository<TEntity>, IDapperOrmRepository<TEntity, TId>
          where TEntity : class, IEntityBase<TId>

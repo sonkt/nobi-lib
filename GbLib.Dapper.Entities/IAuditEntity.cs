@@ -1,4 +1,4 @@
-﻿namespace GbLib.DapperOrm.Entities
+﻿namespace GbLib.Dapper.Entities
 {
     public interface IAuditEntity
     {
@@ -11,9 +11,6 @@
         DateTime? UpdatedDate { get; set; }
 
         Guid? UpdatedUser { get; set; }
-        DateTime? DeletedDate { get; set; }
-
-        Guid? DeletedUser { get; set; }
 
         #endregion Properties
     }

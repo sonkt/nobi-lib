@@ -1,8 +1,8 @@
 ﻿using Dapper;
 using GbLib.Base;
-using GbLib.Entities;
+using GbLib.Dapper.Entities;
 using GbLib.ExcelLib;
-using GbLib.Repositories;
+using GbLib.Dapper.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
 using MoreLinq;
 using OfficeOpenXml.Style;
@@ -10,7 +10,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq.Expressions;
 
-namespace GbLib.Services
+namespace GbLib.Dapper.Services
 {
     public abstract class BaseService<TEntity, TKey> : IBaseService<TEntity, TKey>
              where TEntity : class, IEntityBase<TKey>

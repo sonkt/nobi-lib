@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace GbLib.DapperOrm.Context
+namespace GbLib.Dapper.Entities.Context
 {
     public interface IDbConnectionFactory
     {
