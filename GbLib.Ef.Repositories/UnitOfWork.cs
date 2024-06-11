@@ -64,7 +64,7 @@ namespace GbLib.Ef.Repositories
             return context.Database.ExecuteSqlAsync($"{sql}", cancellationToken);
         }
 
-        public List<T> FromStoreProcedure<T>(string storeName, SqlParameter[] sqlParameters) where T : class
+        public List<T> FromStoreProcedure<T>(string storeName,ref SqlParameter[] sqlParameters) where T : class
         {
             var paramString = $"EXECUTE {storeName} ";
             var listParams = new List<string> { };
