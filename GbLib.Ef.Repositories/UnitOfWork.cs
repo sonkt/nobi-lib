@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
 
@@ -13,7 +14,7 @@ namespace GbLib.Ef.Repositories
         public UnitOfWork(TContext dbContext)
         {
             context = dbContext;
-        }      
+        }
 
         protected virtual void Dispose(bool disposing)
         {
@@ -35,7 +36,7 @@ namespace GbLib.Ef.Repositories
 
         public T GetRepository<T>() where T : class
         {
-            var result = (T)Activator.CreateInstance(typeof(T),context);
+            var result = (T)Activator.CreateInstance(typeof(T), context);
             if (result != null)
             {
                 return result;
@@ -51,6 +52,42 @@ namespace GbLib.Ef.Repositories
         public IDbContextTransaction GetDbTransaction()
         {
             return context.Database.BeginTransaction();
+        }
+
+        public Task<List<T>> FromSql<T>(string sql) where T : class
+        {
+            return context.Database.SqlQuery<T>($"{sql}").ToListAsync();
+        }
+
+        public Task<int> ExecuteSql(string sql, CancellationToken cancellationToken = default)
+        {
+            return context.Database.ExecuteSqlAsync($"{sql}", cancellationToken);
+        }
+
+        public List<T> FromStoreProcedure<T>(string storeName, SqlParameter[] sqlParameters) where T : class
+        {
+            var paramString = $"EXECUTE {storeName} ";
+            var listParams = new List<string> { };
+            foreach (var param in sqlParameters)
+            {
+                switch (param.Direction)
+                {
+                    case ParameterDirection.Output:
+                        listParams.Add($" @{param.ParameterName} OUTPUT");
+                        break;
+                    case ParameterDirection.Input:
+                    case ParameterDirection.InputOutput:
+                    case ParameterDirection.ReturnValue:
+                    default:
+                        listParams.Add($" @{param.ParameterName}");
+                        break;
+                }
+            }
+            if (listParams.Count > 0)
+            {
+                paramString += string.Join(",", listParams);
+            }
+            return context.Database.SqlQueryRaw<T>(paramString,sqlParameters).ToList();
         }
     }
 }
