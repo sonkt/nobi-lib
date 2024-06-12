@@ -14,7 +14,6 @@ namespace TestEf.API.Controllers
             _testEfService = testEfService;
         }
 
-       
         [HttpGet]
         public async Task<TestEfModel?> Get(Guid id)
         {
@@ -42,6 +41,27 @@ namespace TestEf.API.Controllers
             {
                 return null;
             }
+        }
+
+        [HttpGet]
+        [Route("all")]
+        public Task<List<TestEfEntity>> GetAll()
+        {
+            return _testEfService.GetAll();
+        }
+
+        [HttpGet]
+        [Route("paged/{pageSize}/{pageNumber}")]
+        public async Task<PagedData?> GetPaged(int pageSize, int pageNumber)
+        {
+            return await _testEfService.GetPagedAsync(pageSize, pageNumber);
+        }
+
+
+        [HttpDelete]
+        public Task<int> Delete(Guid id)
+        {
+            return  _testEfService.DeleteByIdAsync(id);
         }
 
         [HttpPost]
@@ -72,11 +92,12 @@ namespace TestEf.API.Controllers
             var listData = new List<TestEfEntity>();
             for (int i = 101; i < 2000; i++)
             {
-                listData.Add(new TestEfEntity {
+                listData.Add(new TestEfEntity
+                {
                     CreatedDate = DateTime.Now,
                     CreatedUser = Guid.NewGuid(),
                     Id = Guid.NewGuid(),
-                    TestCode = $"{model.TestCode}_{i+1}",
+                    TestCode = $"{model.TestCode}_{i + 1}",
                     TestName = $"{model.TestName}_{i + 1}",
                 });
             }
@@ -120,6 +141,7 @@ namespace TestEf.API.Controllers
             }
         }
     }
+
     public class TestEfModel
     {
         public Guid Id { get; set; }
@@ -135,9 +157,12 @@ namespace TestEf.API.Controllers
         public string? Description { get; set; }
         public Guid? TenantId { get; set; }
     }
-    public class UpdateTestEfModel: TestEfModel {
+
+    public class UpdateTestEfModel : TestEfModel
+    {
         public byte[] RowVersion { get; set; }
     }
 
-    public class TestEfViewModel: UpdateTestEfModel { }
+    public class TestEfViewModel : UpdateTestEfModel
+    { }
 }

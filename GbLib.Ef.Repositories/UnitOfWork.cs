@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using System.Data;
+using System.Runtime.CompilerServices;
 
 namespace GbLib.Ef.Repositories
 {
@@ -56,15 +57,15 @@ namespace GbLib.Ef.Repositories
 
         public Task<List<T>> FromSql<T>(string sql) where T : class
         {
-            return context.Database.SqlQuery<T>($"{sql}").ToListAsync();
+            return context.Database.SqlQuery<T>(FormattableStringFactory.Create(sql)).ToListAsync();
         }
 
-        public Task<int> ExecuteSql(string sql, CancellationToken cancellationToken = default)
+        public Task<int> FromNonQuerySql(string sql, CancellationToken cancellationToken = default)
         {
-            return context.Database.ExecuteSqlAsync($"{sql}", cancellationToken);
+            return context.Database.ExecuteSqlAsync(FormattableStringFactory.Create(sql), cancellationToken);
         }
 
-        public List<T> FromStoreProcedure<T>(string storeName,ref SqlParameter[] sqlParameters) where T : class
+        public List<T> FromStoreProcedure<T>(string storeName, SqlParameter[] sqlParameters) where T : class
         {
             var paramString = $"EXECUTE {storeName} ";
             var listParams = new List<string> { };

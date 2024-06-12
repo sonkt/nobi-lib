@@ -38,7 +38,7 @@ namespace GbLib.Ef.Repositories
         /// </summary>
         /// <param name="sql">Câu lệnh Sql</param>
         /// <returns>Trả về là 1 giá trị số nguyên thể hiện số dòng bị tác động</returns>
-        Task<int> ExecuteSql(string sql, CancellationToken cancellationToken =default);
+        Task<int> FromNonQuerySql(string sql, CancellationToken cancellationToken =default);
 
         /// <summary>
         /// Thực thi Store procedure với các tham số truyền vào
@@ -47,6 +47,6 @@ namespace GbLib.Ef.Repositories
         /// <param name="sqlName">Danh sách tham số SqlParameter gồm Input và Output theo các kiểu giá trị phù hợp</param>
         /// <param name="sqlParameters"></param>
         /// <returns>Danh sách dữ liệu theo kiểu T, nếu có tham số Output thì lấy trong danh sách sqlParameter</returns>
-        List<T> FromStoreProcedure<T>(string storeName, ref SqlParameter[] sqlParameters) where T : class;
+        List<T> FromStoreProcedure<T>(string storeName, SqlParameter[] sqlParameters) where T : class;
     }
 }
