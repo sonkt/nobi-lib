@@ -118,49 +118,6 @@
             return result;
         }
 
-        public static DateTime ConvertDateWhenUsingAttendanceExcel(string inputDay, string inputHour)
-        {
-            // xử lý ngày
-            try
-            {
-                string[] arrayDate = inputDay.Split('/');
-                string[] arrayHour = inputHour.Split(":");
-                int year = (arrayDate[2].Length == 2) ? int.Parse($"20{arrayDate[2]}") : int.Parse(arrayDate[2]);
-
-                int month = int.Parse(arrayDate[1]);
-                int day = int.Parse(arrayDate[0]);
-
-                int hour = int.Parse(arrayHour[0]);
-                int minute = int.Parse(arrayHour[1]);
-                int second = int.Parse(arrayHour[2]);
-                return new DateTime(year, month, day, hour, minute, second);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("can't create date");
-                throw;
-            }
-        }
-
-        public static DateTime ConvertDateWhenUsingAttendanceExcel(this string inputDay)
-        {
-            // xử lý ngày
-            try
-            {
-                string[] arrayDate = inputDay.Split('/');
-                int year = int.Parse($"20{arrayDate[2]}");
-                int month = int.Parse(arrayDate[0]);
-                int day = int.Parse(arrayDate[1]);
-
-                return new DateTime(year, month, day);
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("can't create date");
-                throw;
-            }
-        }
-
         public static DateTime StartOfWeek(this DateTime dt, DayOfWeek startOfWeek)
         {
             int diff = (7 + (dt.DayOfWeek - startOfWeek)) % 7;
@@ -205,6 +162,16 @@
         public static DateTime EndOfYear(this DateTime date)
         {
             return new DateTime(date.Year, 12, 31);
+        }
+
+        public static DateTime StartOfDate(this DateTime date)
+        {
+            return date.Date.AddHours(0).AddMinutes(0).AddSeconds(0);
+        }
+
+        public static DateTime EndOfDate(this DateTime date)
+        {
+            return date.Date.AddHours(23).AddMinutes(59).AddSeconds(59);
         }
 
         #endregion Methods
