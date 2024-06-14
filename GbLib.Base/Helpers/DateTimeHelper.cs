@@ -284,15 +284,35 @@ namespace GbLib.Base.Helpers
             return diff.Ticks / TimeSpan.TicksPerSecond;
         }
 
-        public static DateTime ConvertToTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
+        /// <summary>
+        /// Convert ngày giờ từ Utc sang 1 Timezone nào đó.
+        /// </summary>
+        /// <param name="dateTime">Ngày giờ có Kind là Utc</param>
+        /// <param name="timeZoneId"></param>
+        /// <returns></returns>
+        public static DateTime UtcToTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
         {
-            var time = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+            if (dateTime.Kind != DateTimeKind.Utc)
+            {
+                dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
+            }
             var timeZone = TZConvert.GetTimeZoneInfo(timeZoneId);
-            return TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
+            return TimeZoneInfo.ConvertTimeFromUtc(dateTime, timeZone);
         }
 
-        public static DateTime ConvertFromTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
+        /// <summary>
+        /// Convert múi giờ khác sang UTC
+        /// </summary>
+        /// <param name="dateTime">DateTime phải là Local hoặc UnSpecify</param>
+        /// <param name="timeZoneId"></param>
+        /// <returns></returns>
+        public static DateTime UtcFromTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
         {
+            if(dateTime.Kind == DateTimeKind.Utc)
+            {
+                return dateTime;
+            }
+            dateTime = DateTime.SpecifyKind(dateTime, DateTimeKind.Unspecified);
             var timeZone = TZConvert.GetTimeZoneInfo(timeZoneId);
             return TimeZoneInfo.ConvertTimeToUtc(dateTime, timeZone);
         }

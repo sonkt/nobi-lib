@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using GbLib.Base.Helpers;
+using Microsoft.AspNetCore.Mvc;
 using TestEf.Application;
 
 namespace TestEf.API.Controllers
@@ -55,6 +56,16 @@ namespace TestEf.API.Controllers
         public async Task<PagedData?> GetPaged(int pageSize, int pageNumber)
         {
             return await _testEfService.GetPagedAsync(pageSize, pageNumber);
+        }
+
+
+        [HttpGet]
+        [Route("datetime/{date}")]
+        public async Task<string> TestDateTime(DateTime date)
+        {
+            var date1= date.UtcFromTimeZone();
+            var date2= date.UtcToTimeZone();
+            return "Ok";
         }
 
 
