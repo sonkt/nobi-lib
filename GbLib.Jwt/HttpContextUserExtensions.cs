@@ -66,7 +66,7 @@ namespace GbLib.Jwt
                 .Where(x => x.Type == JwtClaimsTypes.Permissions)?
                 .Select(x => x.Value)?.ToList() ?? new List<string> { };
             var permissionFromInput = listPermission?.Select(p => p)?.ToList()?? new List<int> { };
-            // Nếu có quyền -1 tức là User Admin BA
+            // Nếu có quyền -1 tức là User Admin
             if (permissionFromContext.Contains(excerpt)) return true;
             // 2 mảng không có thằng nào
             if (permissionFromInput == null || permissionFromContext == null)

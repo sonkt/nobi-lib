@@ -8,15 +8,12 @@ namespace GbLib.MongoDb.Context
 
         private readonly IMongoDatabase _database;
 
-        private readonly MongoDbOptions _options;
-
         #endregion Fields
 
         #region Constructors
 
         public MongoDbContext(MongoDbOptions options)
         {
-            _options = options;
             var client = new MongoClient(options.ConnectionString);
             _database = client.GetDatabase(options.Database);
         }

@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using TimeZoneConverter;
 
 namespace GbLib.Base.Helpers
 {
@@ -286,13 +287,13 @@ namespace GbLib.Base.Helpers
         public static DateTime ConvertToTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
         {
             var time = DateTime.SpecifyKind(dateTime, DateTimeKind.Utc);
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            var timeZone = TZConvert.GetTimeZoneInfo(timeZoneId);
             return TimeZoneInfo.ConvertTimeFromUtc(time, timeZone);
         }
 
         public static DateTime ConvertFromTimeZone(this DateTime dateTime, string timeZoneId = "SE Asia Standard Time")
         {
-            var timeZone = TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            var timeZone = TZConvert.GetTimeZoneInfo(timeZoneId);
             return TimeZoneInfo.ConvertTimeToUtc(dateTime, timeZone);
         }
 

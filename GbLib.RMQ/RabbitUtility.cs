@@ -7,13 +7,11 @@ namespace GbLib.RMQ
 {
     public class RabbitUtility
     {
-        private readonly IServiceProvider _serviceProvider;
         private readonly RabbitMqOptions _rabbitMqOptions;
         private readonly string _defaultNamespace;
 
-        public RabbitUtility(IServiceProvider serviceProvider, RabbitMqOptions options)
+        public RabbitUtility(RabbitMqOptions options)
         {
-            _serviceProvider = serviceProvider;
             _defaultNamespace = options.Exchange.Name;
             _rabbitMqOptions = options;
         }

@@ -7,12 +7,12 @@ namespace GbLib.Redis
 {
     public static class Extensions
     {
-        public static IServiceCollection AddRedisCache(this IServiceCollection services)
+        public static IServiceCollection AddRedisCache(this IServiceCollection services, string section)
         {
             var svcProvider = services.BuildServiceProvider();
             var config = svcProvider.GetRequiredService<IConfiguration>();
             var redisOptions = new RedisOptions();
-            config.Bind("Redis", redisOptions);
+            config.Bind(section, redisOptions);
 
             if (redisOptions.Enabled)
             {

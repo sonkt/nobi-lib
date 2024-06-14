@@ -10,7 +10,6 @@ namespace GbLib.Redis
     {
         #region Fields
 
-        private readonly IDistributedCache _distributedCache;
 
         private readonly object _lock = new object();
 
@@ -22,10 +21,8 @@ namespace GbLib.Redis
 
         #region Constructors
 
-        public RedisConnectionWrapper(IDistributedCache distributedCache,
-            IOptions<RedisCacheOptions> redisOptions)
+        public RedisConnectionWrapper(IOptions<RedisCacheOptions> redisOptions)
         {
-            _distributedCache = distributedCache;
             _redisOptions = redisOptions;
         }
 

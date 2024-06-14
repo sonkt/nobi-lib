@@ -9,7 +9,7 @@ namespace GbLib.Kafka
 {
     public static class Extensions
     {
-        public static void BuildContainerKafkaEventBus(this ContainerBuilder builder, Assembly assembly = null)
+        public static void BuildContainerKafkaEventBus(this ContainerBuilder builder)
         {
             builder.RegisterType<KafkaPublisher>().As<IKafkaProducer>().SingleInstance();
             builder.RegisterType<KafkaSubcriber>().As<IKafkaConsumer>().SingleInstance();
