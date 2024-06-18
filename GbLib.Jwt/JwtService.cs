@@ -1,5 +1,4 @@
-﻿using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
+﻿using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
@@ -10,16 +9,19 @@ namespace GbLib.Jwt
     public class JwtService : IJwtService
     {
         #region Fields
+
         private readonly JwtOptions _options;
         private readonly SigningCredentials _signingCredentials;
         private readonly TokenValidationParameters _tokenValidationParameters;
+
         #endregion Fields
 
         #region Constructors
+
         public JwtService(JwtOptions options)
         {
             _options = options;
-            var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey??""));
+            var issuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.SecretKey ?? ""));
             _signingCredentials = new SigningCredentials(issuerSigningKey, SecurityAlgorithms.HmacSha256);
             _tokenValidationParameters = new TokenValidationParameters
             {
@@ -30,9 +32,11 @@ namespace GbLib.Jwt
                 ValidateLifetime = _options.ValidateLifetime
             };
         }
+
         #endregion Constructors
 
         #region Methods
+
         public IEnumerable<string>? GetClaims(ClaimsPrincipal claimsPrincipal, string claimType)
         {
             return claimsPrincipal.Claims
@@ -47,8 +51,6 @@ namespace GbLib.Jwt
                .Where(x => x.Type == claimType)
                .Select(x => x.Value);
         }
-
-
 
         public string GenerateAccessToken(IEnumerable<Claim> claims, int expiredMinute = 0)
         {
@@ -79,7 +81,7 @@ namespace GbLib.Jwt
         }
 
         public ClaimsPrincipal GetPrincipalFromToken(string token)
-        {           
+        {
             var tokenHandler = new JwtSecurityTokenHandler();
             SecurityToken securityToken;
             _tokenValidationParameters.ValidateLifetime = false;

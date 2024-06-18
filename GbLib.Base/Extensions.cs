@@ -37,11 +37,11 @@ namespace GbLib.Base
                 .InstancePerLifetimeScope();
         }
 
-        public static IMvcCoreBuilder AddCustomMvc(this IServiceCollection services)
+        public static IMvcCoreBuilder AddCustomMvc(this IServiceCollection services,string origin = "customOrigins")
         {
             services.AddCors(options =>
             {
-                options.AddPolicy("DatOrigins",
+                options.AddPolicy(origin,
                 builder =>
                 {
                     builder

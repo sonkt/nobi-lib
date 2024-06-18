@@ -1,5 +1,7 @@
 ﻿using GbLib.Base.Helpers;
+using GbLib.Jwt;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 using TestEf.Application;
 
 namespace TestEf.API.Controllers
@@ -9,10 +11,13 @@ namespace TestEf.API.Controllers
     public class HomeController : ControllerBase
     {
         private readonly ITestEfService _testEfService;
+        private readonly IJwtService _jwtService;
 
-        public HomeController(ITestEfService testEfService)
+        public HomeController(ITestEfService testEfService, IJwtService jwtService)
         {
             _testEfService = testEfService;
+            _jwtService = jwtService;
+
         }
 
         [HttpGet]
@@ -60,6 +65,7 @@ namespace TestEf.API.Controllers
 
 
         [HttpGet]
+        [Auth(Permissions = [1,2],All =true)]
         [Route("datetime/{date}")]
         public async Task<string> TestDateTime(DateTime date)
         {
@@ -67,6 +73,17 @@ namespace TestEf.API.Controllers
             var date2= date.UtcToTimeZone();
             return "Ok";
         }
+
+        [HttpGet]
+        [Route("accessToken")]
+        public async Task<string> GenerateAccessToken()
+        {
+            var claims = new List<Claim> {
+            new Claim(JwtClaimsTypes.Permissions,"1")
+            };
+            return $"{_jwtService.GenerateAccessToken(claims)}";
+        }
+
 
 
         [HttpDelete]

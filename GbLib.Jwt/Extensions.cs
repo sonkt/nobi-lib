@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 
 namespace GbLib.Jwt
@@ -16,6 +17,10 @@ namespace GbLib.Jwt
 
             var jwtOptions = new JwtOptions();
             config.Bind("Jwt", jwtOptions);
+            if (string.IsNullOrEmpty(jwtOptions.SecretKey))
+            {
+                jwtOptions.SecretKey = "SecretKey";
+            }
             services.AddSingleton(jwtOptions);
             if (!jwtOptions.Enabled)
             {
@@ -46,27 +51,13 @@ namespace GbLib.Jwt
                     {
                         OnMessageReceived = context =>
                         {
-                            //// Lấy về token trong request.
-                            //// Nếu có Token thì cứ chạy bình thường
-                            //// Nếu không có thì kiểm tra xem có phải chạy local hoặc từ Internal
-                            //// Nếu chạy từ internal hoặc local thì dùng key vĩnh viễn.
-                            //var requestToken = context.HttpContext.Request.Headers["authorization"];
-                            //if (string.IsNullOrEmpty(requestToken))
-                            //{
-                            //    // Đoạn này dành cho Localhost
-                            //    if (context.HttpContext.Request.Host.Host == "localhost" || context.HttpContext.Request.Host.Host == "kong" || !context.HttpContext.Request.Headers.ContainsKey("x-via-kong"))
-                            //    {
-                            //        context.Token = jwtOptions.InternalTokenKey;
-                            //        return Task.CompletedTask;
-                            //    }
-                            //}
                             return Task.CompletedTask;
                         },
                         OnAuthenticationFailed = context =>
                         {
                             if (context.Exception is SecurityTokenExpiredException)
                             {
-                               context.HttpContext.Response.StatusCode = 403;
+                                context.HttpContext.Response.StatusCode = 403;
                             }
                             var te = context.Exception;
                             return Task.CompletedTask;
@@ -83,12 +74,67 @@ namespace GbLib.Jwt
             return services;
         }
 
-        public static long ToTimestamp(this DateTime dateTime)
+        public static IEnumerable<string>? GetClaims(this HttpContext httpContext, string claimType)
         {
-            var centuryBegin = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
-            var expectedDate = dateTime.Subtract(new TimeSpan(centuryBegin.Ticks));
-
-            return expectedDate.Ticks / 10000;
+            return httpContext?.User?.Claims
+               .Where(x => x.Type == claimType)
+               .Select(x => x.Value);
         }
+
+        public static bool TokenIsValid(this HttpContext httpContext)
+        {
+            var token = GetToken(httpContext);
+            JwtSecurityToken jwtSecurityToken;
+            try
+            {
+                jwtSecurityToken = new JwtSecurityToken(token);
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+
+            return jwtSecurityToken.ValidTo > DateTime.UtcNow;
+        }
+
+        public static string GetToken(this HttpContext httpContext)
+        {
+            var authorizationHeader = httpContext.Request.Headers["authorization"];
+            return string.IsNullOrEmpty(authorizationHeader)
+                ? string.Empty
+                : authorizationHeader.Single().Split(' ').Last();
+        }
+
+        public static bool HasPermission(this HttpContext httpContext, int[]? listPermission, string excerpt = "-1")
+        {
+            var permissionFromContext = httpContext?.User?.Claims?
+                .Where(x => x.Type == JwtClaimsTypes.Permissions)?
+                .Select(x => x.Value)?.ToList() ?? new List<string> { };
+            var permissionFromInput = listPermission?.Select(p => p)?.ToList() ?? new List<int> { };
+            if (permissionFromContext.Contains(excerpt)) return true;
+            if (permissionFromInput != null && permissionFromContext != null)
+            {
+                return permissionFromInput.Any(x => permissionFromContext.Contains(x.ToString()));
+            }
+            return false;
+        }
+
+        public static bool HasPermissionAll(this HttpContext httpContext, int[]? listPermission, string excerpt = "-1")
+        {
+            var permissionFromContext = httpContext?.User?.Claims?
+                .Where(x => x.Type == JwtClaimsTypes.Permissions)?
+                .Select(x => x.Value)?.ToList() ?? new List<string> { };
+            var permissionFromInput = listPermission?.Select(p => p)?.ToList() ?? new List<int> { };
+            // Nếu có quyền -1 tức là User Admin
+            if (permissionFromContext.Contains(excerpt)) return true;
+            // 2 mảng không có thằng nào
+            if (permissionFromInput != null && permissionFromContext != null)
+            {
+                return permissionFromInput.All(x => permissionFromContext.Contains(x.ToString()));
+            }
+            return false;
+        }
+
+        public static bool IsAuthenticated(this HttpContext httpContext) => httpContext?.User?.Identity?.IsAuthenticated ?? false;
     }
 }

@@ -1,7 +1,9 @@
 
-using Autofac.Core;
+using GbLib.Jwt;
 using GbLib.Ef.Repositories;
 using TestEf.Application;
+using GbLib.Swagger;
+using GbLib.Base;
 
 namespace TestEf.API
 {
@@ -14,10 +16,9 @@ namespace TestEf.API
             // Add services to the container.
 
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
+            builder.Services.AddJwt();
+            builder.Services.AddCustomMvc();
+            builder.Services.AddSwagger();
             builder.Services.AddDbContext<TestEfDbContext>("SqlServer");
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork<TestEfDbContext>>();
             builder.Services.AddAllRepositories<TestEfDbContext>();
@@ -37,9 +38,8 @@ namespace TestEf.API
             }
 
             app.UseHttpsRedirection();
-
             app.UseAuthorization();
-
+            app.UseAuthentication();
             app.MapControllers();
 
             app.Run();

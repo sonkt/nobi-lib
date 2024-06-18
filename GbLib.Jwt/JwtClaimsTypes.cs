@@ -9,7 +9,7 @@
         public static string Audience = "aud";
         public static string ExpirationTime = "exp";
         public static string IssuedAt = "iat";
-        public static string AuthTime = "auth_time";
+        public static string AuthTime = "atime";
         public static string Nonce = "nonce";
         public static string AuthContextReference = "acr";
         public static string AuthMethodReference = "amr";
@@ -20,7 +20,7 @@
         public static string UserId = "uid";
         public static string UserType = "utype";
         public static string Configs = "confs";
-        public static string OrgnizationId = "orgid";
+        public static string TenantId = "tid";
         #endregion Fields
     }
 }
