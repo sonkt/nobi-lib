@@ -1,5 +1,4 @@
-﻿using GbLib.Base.Helpers;
-using GbLib.Ef.Repositories;
+﻿using GbLib.Ef.Repositories;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
@@ -56,7 +55,6 @@ namespace TestEf.Application
 
         public Task<int> DeleteByIdAsync(Guid id)
         {
-
             return _unitOfWork.FromNonQuerySql($"DELETE FROM TestEfEntities WHERE PK_TestEfEntityID='{id}'");
         }
 
@@ -151,5 +149,22 @@ namespace TestEf.Application
     {
         public List<TestEfEntity> Items { get; set; }
         public int TotalRows { get; set; }
+    }
+
+    public interface ITestEfService
+    {
+        Task<bool> AddItemAsync(TestEfEntity item);
+
+        Task<bool> AddItemAsync(List<TestEfEntity> items);
+
+        Task<bool> UpdateItemAsync(TestEfEntity item, Guid Id);
+
+        Task<TestEfEntity?> GetByIdAsync(Guid Id);
+
+        Task<List<TestEfEntity>> GetAll();
+
+        Task<int> DeleteByIdAsync(Guid id);
+
+        Task<PagedData> GetPagedAsync(int pageIndex, int pageSize);
     }
 }

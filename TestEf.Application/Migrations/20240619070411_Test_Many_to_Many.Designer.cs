@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using TestEf.Application;
 
@@ -11,9 +12,11 @@ using TestEf.Application;
 namespace TestEf.Application.Migrations
 {
     [DbContext(typeof(TestEfDbContext))]
-    partial class TestEfDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240619070411_Test_Many_to_Many")]
+    partial class Test_Many_to_Many
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

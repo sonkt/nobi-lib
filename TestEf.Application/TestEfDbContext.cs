@@ -6,6 +6,9 @@ namespace TestEf.Application
     {
         public DbSet<TestEfEntity> TestEfEntities { get; set; }
 
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<Post> Posts { get; set; }
+
         public TestEfDbContext(DbContextOptions dbContextOptions) : base(dbContextOptions)
         {
         }
@@ -19,6 +22,15 @@ namespace TestEf.Application
             modelBuilder.Entity<TestEfEntity>().Property(p=>p.RowVersion).IsConcurrencyToken();
             modelBuilder.Entity<TestEfEntity>().Property(c => c.CreatedDate).ValueGeneratedOnAdd().Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
             modelBuilder.Entity<TestEfEntity>().Property(c => c.CreatedUser).ValueGeneratedOnAdd().Metadata.SetAfterSaveBehavior(Microsoft.EntityFrameworkCore.Metadata.PropertySaveBehavior.Ignore);
+
+            modelBuilder.Entity<Post>()
+                .HasMany(p => p.Tags)
+                .WithMany(p => p.Posts)
+                .UsingEntity("PostsToTags",
+                    l => l.HasOne(typeof(Tag)).WithMany().HasForeignKey("FK_TagId"),
+                    r => r.HasOne(typeof(Post)).WithMany().HasForeignKey("FK_PostId"),
+                    j => j.HasKey("FK_TagId", "FK_PostId")
+                );
         }
     }
 }

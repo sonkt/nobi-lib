@@ -11,13 +11,14 @@ namespace TestEf.API.Controllers
     public class HomeController : ControllerBase
     {
         private readonly ITestEfService _testEfService;
+        private readonly IPostService _postService;
         private readonly IJwtService _jwtService;
 
-        public HomeController(ITestEfService testEfService, IJwtService jwtService)
+        public HomeController(ITestEfService testEfService, IJwtService jwtService,IPostService postService)
         {
             _testEfService = testEfService;
             _jwtService = jwtService;
-
+            _postService = postService;
         }
 
         [HttpGet]
@@ -65,12 +66,12 @@ namespace TestEf.API.Controllers
 
 
         [HttpGet]
-        [Auth(Permissions = [1,2],All =true)]
+        [Auth(Permissions = [1, 2], All = true)]
         [Route("datetime/{date}")]
         public async Task<string> TestDateTime(DateTime date)
         {
-            var date1= date.UtcFromTimeZone();
-            var date2= date.UtcToTimeZone();
+            var date1 = date.UtcFromTimeZone();
+            var date2 = date.UtcToTimeZone();
             return "Ok";
         }
 
@@ -89,7 +90,7 @@ namespace TestEf.API.Controllers
         [HttpDelete]
         public Task<int> Delete(Guid id)
         {
-            return  _testEfService.DeleteByIdAsync(id);
+            return _testEfService.DeleteByIdAsync(id);
         }
 
         [HttpPost]
@@ -167,6 +168,49 @@ namespace TestEf.API.Controllers
             {
                 return BadRequest();
             }
+        }
+
+        [HttpPost]
+        [Route("post/many")]
+        public async Task<IActionResult> InsertPostMany()
+        {
+            var listData = new List<Post>();
+            var listTags = new List<Tag> { 
+                new Tag{
+                    TagContent="Content 1"
+                },
+                new Tag{
+                    TagContent="Content 2"
+                }
+            };
+            for (int i = 1; i < 10; i++)
+            {
+                listData.Add(new Post
+                {
+                    CreatedDate = DateTime.Now,
+                    CreatedUser = Guid.NewGuid(),
+                    Id = Guid.NewGuid(),
+                    PostTitle = $"Title {i}",
+                    PostBody = $"Nội dung số {i}",
+                    Tags= listTags
+                });
+            }
+            var result = await _postService.AddItemAsync(listData);
+            if (result)
+            {
+                return Ok();
+            }
+            else
+            {
+                return BadRequest();
+            }
+        }
+
+        [HttpGet]
+        [Route("posts")]
+        public async Task<List<Post>> GetAllPost()
+        {
+           return await _postService.GetAll();
         }
     }
 
