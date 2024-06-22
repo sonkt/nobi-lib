@@ -36,7 +36,7 @@ namespace GbLib.MongoDb.Repositories
 
         Task<TEntity> GetObjectByIdAsync(ObjectId id, string collectionName = "");
 
-        int RecordCount(FilterDefinition<TEntity> predicate, string collectionName = "");
+        Task<long> RecordCountAsync(FilterDefinition<TEntity> predicate, string collectionName = "");
 
         IMongoCollection<TEntity> GetCollection(string collectionName = "");
 

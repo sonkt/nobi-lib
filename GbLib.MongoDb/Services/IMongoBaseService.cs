@@ -31,7 +31,7 @@ namespace GbLib.MongoDb.Services
 
         IMongoCollection<TEntity> GetCollection(string collectionName = "");
 
-        Task<int> RecordCount(FilterDefinition<TEntity> predicate, string collectionName = "");
+        Task<long> RecordCountAsync(FilterDefinition<TEntity> predicate, string collectionName = "");
 
         Task<string> ExportExcel(List<object> listData, List<ExcelColumnModel> listColumns, string reportTitle, int titleRowHeight, IDbTransaction? dbTransaction, bool hasIndexColumn);
 

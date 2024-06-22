@@ -100,9 +100,9 @@ namespace GbLib.MongoDb.Repositories
                 .FirstOrDefault();
         }
 
-        public async Task<TEntity> GetObjectAsync(FilterDefinition<TEntity> predicate, string collectionName = "")
+        public Task<TEntity> GetObjectAsync(FilterDefinition<TEntity> predicate, string collectionName = "")
         {
-            return await _mongoDbContext
+            return _mongoDbContext
                 .Collection<TEntity>(collectionName)
                 .Find(predicate)
                 .FirstOrDefaultAsync();
@@ -118,14 +118,16 @@ namespace GbLib.MongoDb.Repositories
                 .FirstOrDefault();
         }
 
-        public async Task<TEntity> GetObjectByIdAsync(ObjectId id, string collectionName = "")
+        public Task<TEntity> GetObjectByIdAsync(ObjectId id, string collectionName = "")
         {
-            return await FindOneAsync(id, collectionName);
+            return FindOneAsync(id, collectionName);
         }
 
-        public int RecordCount(FilterDefinition<TEntity> predicate, string collectionName = "")
+        public Task<long> RecordCountAsync(FilterDefinition<TEntity> predicate, string collectionName = "")
         {
-            throw new NotImplementedException();
+           return  _mongoDbContext
+                 .Collection<TEntity>(collectionName)
+                 .CountDocumentsAsync(predicate);
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity, string collectionName = "")

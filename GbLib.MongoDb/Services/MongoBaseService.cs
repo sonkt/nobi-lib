@@ -381,9 +381,9 @@ namespace GbLib.MongoDb.Services
             return ExportExcel(listData, listColumns, reportTitle, 40, null, false);
         }
 
-        public virtual Task<int> RecordCount(FilterDefinition<TEntity> predicate, string collectionName = "")
+        public virtual Task<long> RecordCountAsync(FilterDefinition<TEntity> predicate, string collectionName = "")
         {
-            return Task.FromResult(_repository.RecordCount(predicate, collectionName));
+            return _repository.RecordCountAsync(predicate, collectionName);
         }
     }
 }
