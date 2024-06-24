@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 using Serilog;
@@ -28,11 +29,41 @@ namespace GbLib.Logging
             return builder.UseMiddleware<ErrorLoggingMiddleware>();
         }
 
-        public static IHostBuilder UseLogging(this IHostBuilder hostBuilder, string applicationName = null)
+        public static IServiceCollection AddLogging(this IServiceCollection services)
+        {
+            var resolver = services.BuildServiceProvider();
+            using (var scope = resolver.CreateScope())
+            {
+                var config = scope.ServiceProvider.GetService<IConfiguration>();
+                var seqOptions = new SeqOptions();
+                var elasticSearchOptions = new ElasticSearchOptions();
+                var rabbitMQSinksOptions = new RabbitMQSinksOptions();
+                var serilogOptions = new SerilogOptions();
+                config.Bind("seq", seqOptions);
+                config.Bind("elasticsearch", elasticSearchOptions);
+                config.Bind("rabbitmqsinksoptions", rabbitMQSinksOptions);
+                config.Bind("serilog", serilogOptions);
+                if (!Enum.TryParse<LogEventLevel>(serilogOptions.Level, true, out var level))
+                {
+                    level = LogEventLevel.Warning;
+                }
+                services.AddSerilog((configuration) =>
+                {
+                    configuration.Enrich.FromLogContext()
+                    .MinimumLevel.Is(level)
+                    .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
+                    .MinimumLevel.Override("System", LogEventLevel.Warning);
+                    Configure(configuration, level, seqOptions, serilogOptions, elasticSearchOptions, rabbitMQSinksOptions);
+                });
+            }
+
+            return services;
+        }
+
+        public static IHostBuilder UseLogging(this IHostBuilder hostBuilder)
         {
             return hostBuilder.UseSerilog(((context, configuration) =>
             {
-                var appOptions = context.Configuration.GetOptions<AppOptions>("app");
                 var seqOptions = context.Configuration.GetOptions<SeqOptions>("seq");
                 var elasticSearchOptions = context.Configuration.GetOptions<ElasticSearchOptions>("elasticsearch");
                 var rabbitMQSinksOptions = context.Configuration.GetOptions<RabbitMQSinksOptions>("rabbitmqsinksoptions");
@@ -41,8 +72,6 @@ namespace GbLib.Logging
                 {
                     level = LogEventLevel.Warning;
                 }
-
-                applicationName = string.IsNullOrWhiteSpace(applicationName) ? appOptions.Name : applicationName;
                 configuration.Enrich.FromLogContext()
                     .MinimumLevel.Is(level)
                     .MinimumLevel.Override("Microsoft", LogEventLevel.Warning)
