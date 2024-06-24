@@ -58,7 +58,6 @@ namespace GbLib.RMQ
                     countRetry++;
                 }
             }
-            Console.WriteLine($"[GbLib]: Đã gửi event {typeof(T).Name}. Routing Key:{key}");
         }
     }
 }

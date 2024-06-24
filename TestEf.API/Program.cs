@@ -28,6 +28,8 @@ namespace TestEf.API
                                .AsImplementedInterfaces()
                                .WithScopedLifetime());
 
+            builder.Services.AddHostedService<TestWorker>();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
