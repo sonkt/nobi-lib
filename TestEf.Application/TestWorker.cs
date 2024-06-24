@@ -1,5 +1,4 @@
-﻿using GbLib.Extensions;
-using GbLib.Worker;
+﻿using GbLib.Worker;
 using Microsoft.Extensions.Logging;
 
 namespace TestEf.Application
@@ -14,11 +13,15 @@ namespace TestEf.Application
         {
             while (!stoppingToken.IsCancellationRequested)
             {
-                var result = await WaitForNextSchedule("0  48 10 24 6 MON", Cronos.CronFormat.IncludeSeconds, "SE Asia Standard Time");
+                var result = await WaitForNextSchedule("0  48 15 24 6 *", Cronos.CronFormat.IncludeSeconds, "SE Asia Standard Time");
                 if (!result)
                 {
-                    _ = this.StopAsync(stoppingToken);
-                    Console.WriteLine($"[*] {this.GetType().Name} đã dừng lúc {DateTime.Now.ToString("hh:MM:ss dd/MM/yyyy")}");
+                    Console.WriteLine($"[*] {this.GetType().Name} gia hạn thời gian chờ lịch {DateTime.Now.ToString("hh:mm:ss:fff dd/MM/yyyy")}");
+                }
+                else
+                {
+                    Console.WriteLine($"Thực thi job trong 5 phút từ {DateTime.Now.ToString("hh:mm:ss:fff dd:MM:yyyy")}");
+                    Task.Delay(300000).Wait();
                 }
             }
         }
