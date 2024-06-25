@@ -29,20 +29,31 @@ namespace GbLib.Logging
             return builder.UseMiddleware<ErrorLoggingMiddleware>();
         }
 
-        public static IServiceCollection AddLogging(this IServiceCollection services)
+        /// <summary>
+        /// Đăng ký sử dụng Logging với Serilog.
+        /// </summary>
+        /// <param name="services"></param>
+        /// <param name="serilogSectionName">SectionName của Serilog trong appsettings.json</param>
+        /// <param name="seqSectionName">SectionName của Seq (nếu dùng) trong appsettings.json</param>
+        /// <param name="esSectionName">SectionName của ElasticSearch (nếu dùng) trong appsettings.json</param>
+        /// <param name="rbSectionName">SectionName của RabbitMQSink (nếu dùng) trong appsettings.json</param>
+        /// <returns></returns>
+        public static IServiceCollection AddLogging(this IServiceCollection services,string serilogSectionName,string seqSectionName = "seq", string esSectionName= "elasticsearch",string rbSectionName = "rabbitmqsinksoptions")
         {
             var resolver = services.BuildServiceProvider();
             using (var scope = resolver.CreateScope())
             {
                 var config = scope.ServiceProvider.GetService<IConfiguration>();
+                if (config == null) return services;
+
                 var seqOptions = new SeqOptions();
                 var elasticSearchOptions = new ElasticSearchOptions();
                 var rabbitMQSinksOptions = new RabbitMQSinksOptions();
                 var serilogOptions = new SerilogOptions();
-                config.Bind("seq", seqOptions);
-                config.Bind("elasticsearch", elasticSearchOptions);
-                config.Bind("rabbitmqsinksoptions", rabbitMQSinksOptions);
-                config.Bind("serilog", serilogOptions);
+                config.Bind(seqSectionName, seqOptions);
+                config.Bind(esSectionName, elasticSearchOptions);
+                config.Bind(rbSectionName, rabbitMQSinksOptions);
+                config.Bind(serilogSectionName, serilogOptions);
                 if (!Enum.TryParse<LogEventLevel>(serilogOptions.Level, true, out var level))
                 {
                     level = LogEventLevel.Warning;
