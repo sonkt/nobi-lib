@@ -10,6 +10,8 @@ namespace GbLib.Ef.Repositories
 
         Task<TEntity?> FindAsync(TKey id);
 
+        Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>>? filter = null);
+
         Task<int> CountAsync(Expression<Func<TEntity, bool>>? filter = null);
 
         Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includeProperties = "");

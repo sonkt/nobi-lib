@@ -88,6 +88,15 @@ namespace GbLib.Ef.Repositories
             return _dbSet.AsNoTracking().FirstOrDefaultAsync(m => m.Id.Equals(id));
         }
 
+        public Task<TEntity?> FindAsync(Expression<Func<TEntity, bool>>? filter = null)
+        {
+            if (filter == null)
+            {
+                filter = m => m.IsDeleted != true;
+            }
+            return _dbSet.AsNoTracking().FirstOrDefaultAsync(filter);
+        }
+
         public virtual async Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includeProperties = "")
         {
             if (pageNumber == 0)
