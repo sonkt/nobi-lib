@@ -119,7 +119,7 @@ namespace TestEf.API.Controllers
         public async Task<IActionResult> PostMany(TestEfModel model)
         {
             var listData = new List<TestEfEntity>();
-            for (int i = 101; i < 2000; i++)
+            for (int i = 3000; i < 4000; i++)
             {
                 listData.Add(new TestEfEntity
                 {

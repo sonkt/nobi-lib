@@ -1,17 +1,14 @@
 ﻿using GbLib.Ef.Repositories;
+using GbLib.Ef.Service;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 
 namespace TestEf.Application
 {
-    public class TestEfService : ITestEfService
+    public class TestEfService : BaseService, ITestEfService
     {
-        private readonly IUnitOfWork _unitOfWork;
-
-        public TestEfService(IUnitOfWork unitOfWork)
-        {
-            _unitOfWork = unitOfWork;
-        }
+        public TestEfService(IUnitOfWork unitOfWork) : base(unitOfWork)
+        { }
 
         public Task<bool> AddItemAsync(TestEfEntity item)
         {

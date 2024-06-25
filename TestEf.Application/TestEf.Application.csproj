@@ -16,6 +16,7 @@
   <ItemGroup>
     <ProjectReference Include="..\GbLib.Ef.Entities\GbLib.Ef.Entities.csproj" />
     <ProjectReference Include="..\GbLib.Ef.Repositories\GbLib.Ef.Repositories.csproj" />
+    <ProjectReference Include="..\GbLib.Ef.Service\GbLib.Ef.Service.csproj" />
     <ProjectReference Include="..\GbLib.Worker\GbLib.Worker.csproj" />
   </ItemGroup>
 
