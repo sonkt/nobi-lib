@@ -18,6 +18,8 @@
         public bool AutoCloseConnection { get; set; }
         public bool AutomaticRecovery { get; set; }
         public bool TopologyRecovery { get; set; }
+        public ushort PrefetchCount { get; set; } = 1;
+        public bool EnableRequeue { get; set; } = true;
         public ExchangeOption Exchange { get; set; }
         public QueueOption Queue { get; set; }
 

@@ -46,6 +46,7 @@ namespace GbLib.RMQ
                 _channel.ExchangeDeclare(exchangeName, _rabbitMqOptions.Exchange.Type, _rabbitMqOptions.Exchange.Durable, _rabbitMqOptions.Exchange.AutoDelete);
                 _channel.QueueDeclare(queueName, _rabbitMqOptions.Queue.Durable, _rabbitMqOptions.Queue.Exclusive, _rabbitMqOptions.Queue.AutoDelete ? !_rabbitUtility.IsPublic<T>() ? true : false : false, null);
                 _channel.QueueBind(queueName, exchangeName, routingKey);
+                _channel.BasicQos(0, _rabbitMqOptions.PrefetchCount, false);
 
                 var consummerAsync = new AsyncEventingBasicConsumer(_channel);
                 consummerAsync.Received += ConsummerAsync_Received;
@@ -77,7 +78,8 @@ namespace GbLib.RMQ
                     }
                     else
                     {
-                        Console.WriteLine($"[GbLib]: RabbitMQ receiver: Không Reg được EventHandler {nameof(T)}");
+                        _channel.BasicReject(@event.DeliveryTag, _rabbitMqOptions.EnableRequeue);
+                        Console.WriteLine($"[GbLib]: Message chưa được xử lý và đã requeue: {message}");
                     }
                 }
                 else
@@ -103,8 +105,9 @@ namespace GbLib.RMQ
                     await handle();
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[GbLib]: Có lỗi khi xử ký event {ex.Message}");
                     return false;
                 }
             });

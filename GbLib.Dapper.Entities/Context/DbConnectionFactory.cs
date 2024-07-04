@@ -47,6 +47,10 @@ namespace GbLib.Dapper.Entities.Context
                 _connection.ConnectionString = connectionString;
                 _connection.Open();
             }
+            if(_connection.State== ConnectionState.Closed)
+            {
+                _connection.Open();
+            }
             // Return the connection.
             return _connection;
         }

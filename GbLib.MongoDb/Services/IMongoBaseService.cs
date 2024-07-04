@@ -20,8 +20,12 @@ namespace GbLib.MongoDb.Services
         Task<ObjectId> InsertAsync(TEntity data, string collectionName = "");
 
         Task<List<ObjectId>> InsertListAsync(List<TEntity> listData, string collectionName = "");
+        void Add(List<TEntity> entities, string collectionName = "");
+        void Add(TEntity entity, string collectionName = "");
 
         Task<bool> UpdateAsync(TEntity data, string collectionName = "");
+        void Update(List<TEntity> entities, string collectionName = "");
+        void Update(TEntity entity, string collectionName = "");
 
         Task<bool> UpdateListAsync(List<TEntity> listData, string collectionName = "");
 

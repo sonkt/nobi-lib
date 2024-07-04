@@ -385,5 +385,25 @@ namespace GbLib.MongoDb.Services
         {
             return _repository.RecordCountAsync(predicate, collectionName);
         }
+
+        public void Add(List<TEntity> entities, string collectionName = "")
+        {
+            _repository.Add(entities, collectionName);
+        }
+
+        public void Add(TEntity entity, string collectionName = "")
+        {
+            _repository.Add(entity, collectionName);
+        }
+
+        public void Update(List<TEntity> entities, string collectionName = "")
+        {
+            _repository.Update(entities, collectionName);
+        }
+
+        public void Update(TEntity entity, string collectionName = "")
+        {
+            _repository.Update(entity, collectionName);
+        }
     }
 }

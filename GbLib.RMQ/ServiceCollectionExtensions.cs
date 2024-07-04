@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using GbLib.Base;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
@@ -33,8 +32,9 @@ namespace GbLib.RMQ
 
             return services;
         }
+
         public static void UseRabbitMq(this ContainerBuilder builder, Assembly? assembly = null)
-        {           
+        {
             if (assembly == null)
             {
                 assembly = Assembly.GetCallingAssembly();
@@ -42,7 +42,7 @@ namespace GbLib.RMQ
 
             builder.RegisterAssemblyTypes(assembly)
                 .AsClosedTypesOf(typeof(IRabbitEventHandler<>))
-                .InstancePerLifetimeScope();
+                .SingleInstance();
         }
     }
 }

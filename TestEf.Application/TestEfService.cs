@@ -12,11 +12,11 @@ namespace TestEf.Application
 
         public Task<bool> AddItemAsync(TestEfEntity item)
         {
-            var repo = _unitOfWork.GetRepository<TestEfRepository>();
+            var repo = UnitOfWork.GetRepository<TestEfRepository>();
             if (repo != null)
             {
                 repo.Insert(item);
-                var affected = _unitOfWork.CommitChange();
+                var affected = UnitOfWork.CommitChange();
                 return Task.FromResult(affected > 0);
             }
             return Task.FromResult(false);
@@ -24,13 +24,13 @@ namespace TestEf.Application
 
         public Task<bool> AddItemAsync(List<TestEfEntity> items)
         {
-            using (var trans = _unitOfWork.GetDbTransaction())
+            using (var trans = UnitOfWork.GetDbTransaction())
             {
-                var repo = _unitOfWork.GetRepository<TestEfRepository>();
+                var repo = UnitOfWork.GetRepository<TestEfRepository>();
                 if (repo != null)
                 {
                     repo.Insert(items);
-                    var affected = _unitOfWork.CommitChange();
+                    var affected = UnitOfWork.CommitChange();
                     if (affected > 0)
                     {
                         trans.Commit();
@@ -52,17 +52,17 @@ namespace TestEf.Application
 
         public Task<int> DeleteByIdAsync(Guid id)
         {
-            return _unitOfWork.FromNonQuerySql($"DELETE FROM TestEfEntities WHERE PK_TestEfEntityID='{id}'");
+            return UnitOfWork.FromNonQuerySql($"DELETE FROM TestEfEntities WHERE PK_TestEfEntityID='{id}'");
         }
 
         public Task<List<TestEfEntity>> GetAll()
         {
-            return _unitOfWork.FromSql<TestEfEntity>($"SELECT TOP 10 * FROM TestEfEntities ");
+            return UnitOfWork.FromSql<TestEfEntity>($"SELECT TOP 10 * FROM TestEfEntities ");
         }
 
         public async Task<TestEfEntity?> GetByIdAsync(Guid Id)
         {
-            var repo = _unitOfWork.GetRepository<TestEfRepository>();
+            var repo = UnitOfWork.GetRepository<TestEfRepository>();
             if (repo != null)
             {
                 return await repo.FindAsync(Id);
@@ -97,7 +97,7 @@ namespace TestEf.Application
                 DbType = System.Data.DbType.Int32
             };
             var arrParams = new SqlParameter[] { pNumber, pSize, totalParam };
-            var result = _unitOfWork.FromStoreProcedure<TestEfEntity>("[dbo].[GetDataWithOutput]", arrParams);
+            var result = UnitOfWork.FromStoreProcedure<TestEfEntity>("[dbo].[GetDataWithOutput]", arrParams);
             if (result != null)
             {
                 var total = (int)totalParam.Value;
@@ -119,7 +119,7 @@ namespace TestEf.Application
         {
             try
             {
-                var repo = _unitOfWork.GetRepository<TestEfRepository>();
+                var repo = UnitOfWork.GetRepository<TestEfRepository>();
                 if (repo != null)
                 {
                     var itemInDb = await repo.FindAsync(Id);
@@ -129,7 +129,7 @@ namespace TestEf.Application
                     }
 
                     repo.Update(item);
-                    var affected = _unitOfWork.CommitChange();
+                    var affected = UnitOfWork.CommitChange();
                     return affected > 0;
                 }
                 return false;

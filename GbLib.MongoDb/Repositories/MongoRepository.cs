@@ -125,9 +125,9 @@ namespace GbLib.MongoDb.Repositories
 
         public Task<long> RecordCountAsync(FilterDefinition<TEntity> predicate, string collectionName = "")
         {
-           return  _mongoDbContext
-                 .Collection<TEntity>(collectionName)
-                 .CountDocumentsAsync(predicate);
+            return _mongoDbContext
+                  .Collection<TEntity>(collectionName)
+                  .CountDocumentsAsync(predicate);
         }
 
         public async Task<TEntity> UpdateAsync(TEntity entity, string collectionName = "")
@@ -153,6 +153,29 @@ namespace GbLib.MongoDb.Repositories
         public IMongoCollection<TEntity> GetCollection(string collectionName = "")
         {
             return _mongoDbContext.Collection<TEntity>(collectionName);
+        }
+
+        public void Add(List<TEntity> entities, string collectionName = "")
+        {
+            _mongoDbContext.Collection<TEntity>(collectionName).InsertMany(entities);
+        }
+
+        public void Add(TEntity entity, string collectionName = "")
+        {
+            _mongoDbContext.Collection<TEntity>(collectionName).InsertOne(entity, new InsertOneOptions() { BypassDocumentValidation=false });
+        }
+
+        public void Update(TEntity entity, string collectionName = "")
+        {
+            _mongoDbContext.Collection<TEntity>(collectionName).ReplaceOne(n => n.Id.Equals(entity.Id), entity, new ReplaceOptions() { IsUpsert = true });
+        }
+
+        public void Update(List<TEntity> entities, string collectionName = "")
+        {
+            foreach (var entity in entities)
+            {
+                Update(entity, collectionName);
+            }
         }
 
         #endregion Public Methods
