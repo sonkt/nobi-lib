@@ -8,11 +8,11 @@
     <Title>GbLib.ExcelLib</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
     <Description>Library to Export Excel</Description>
-    <Version>1.1.0</Version>
+	  <Version>1.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\GbLib.Base\GbLib.Base.csproj" />
+    <PackageReference Include="EPPlus" Version="7.2.1" />
   </ItemGroup>
 
 </Project>

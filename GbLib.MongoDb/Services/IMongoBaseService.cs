@@ -1,6 +1,6 @@
-﻿using GbLib.Base;
-using GbLib.ExcelLib;
+﻿using GbLib.ExcelLib;
 using GbLib.MongoDb.Entities;
+using GbLib.MongoDb.Repositories;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using System.Data;

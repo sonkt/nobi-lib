@@ -1,10 +1,8 @@
 ﻿using Dapper;
-using GbLib.Base;
 using GbLib.Dapper.Entities;
-using GbLib.ExcelLib;
 using GbLib.Dapper.Repositories;
+using GbLib.ExcelLib;
 using MicroOrm.Dapper.Repositories.SqlGenerator.Filters;
-using MoreLinq;
 using OfficeOpenXml.Style;
 using System.Data;
 using System.Drawing;
@@ -402,10 +400,10 @@ namespace GbLib.Dapper.Services
                     Order = totalColumns
                 };
                 var attributes = property.GetCustomAttributes(false);
-                var attribute = attributes.FirstOrDefault(m => m is Base.Attributes.DisplayNameAttribute);
+                var attribute = attributes.FirstOrDefault(m => m is Attributes.DisplayNameAttribute);
                 if (attribute != null)
                 {
-                    var att = (Base.Attributes.DisplayNameAttribute)attribute;
+                    var att = (Attributes.DisplayNameAttribute)attribute;
                     gridColumn.Order = att.Order + 1;
                     gridColumn.Header = new List<ExcelColumnHeader> { new ExcelColumnHeader { ColumnSpan = 1, Title = att.DisplayName, Format = new ExcelCellFormat { BackgroundColor = Color.Gray, IsBold = true, IsWrapText = true, TextAlignment = ExcelHorizontalAlignment.Center, TextVerticalAlignment = ExcelVerticalAlignment.Center, TextColor = Color.White, } } };
                     gridColumn.Footer = new List<ExcelColumnFooter> { new ExcelColumnFooter { ColumnSpan = 1, Content = "", Format = new ExcelCellFormat { BackgroundColor = Color.WhiteSmoke, IsWrapText = true, TextAlignment = ExcelHorizontalAlignment.Center, TextVerticalAlignment = ExcelVerticalAlignment.Center, TextColor = Color.Black } } };

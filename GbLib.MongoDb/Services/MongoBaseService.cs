@@ -1,5 +1,4 @@
-﻿using GbLib.Base;
-using GbLib.ExcelLib;
+﻿using GbLib.ExcelLib;
 using GbLib.MongoDb.Entities;
 using GbLib.MongoDb.Repositories;
 using MongoDB.Bson;
@@ -239,10 +238,10 @@ namespace GbLib.MongoDb.Services
                     Order = totalColumns
                 };
                 var attributes = property.GetCustomAttributes(false);
-                var attribute = attributes.FirstOrDefault(m => m is Base.Attributes.DisplayNameAttribute);
+                var attribute = attributes.FirstOrDefault(m => m is Attributes.DisplayNameAttribute);
                 if (attribute != null)
                 {
-                    var att = (Base.Attributes.DisplayNameAttribute)attribute;
+                    var att = (Attributes.DisplayNameAttribute)attribute;
                     gridColumn.Order = att.Order + 1;
                     gridColumn.Header = new List<ExcelColumnHeader> { new ExcelColumnHeader { ColumnSpan = 1, Title = att.DisplayName, Format = new ExcelCellFormat { BackgroundColor = Color.Gray, IsBold = true, IsWrapText = true, TextAlignment = ExcelHorizontalAlignment.Center, TextVerticalAlignment = ExcelVerticalAlignment.Center, TextColor = Color.White, } } };
                     gridColumn.Footer = new List<ExcelColumnFooter> { new ExcelColumnFooter { ColumnSpan = 1, Content = "", Format = new ExcelCellFormat { BackgroundColor = Color.WhiteSmoke, IsWrapText = true, TextAlignment = ExcelHorizontalAlignment.Center, TextVerticalAlignment = ExcelVerticalAlignment.Center, TextColor = Color.Black } } };

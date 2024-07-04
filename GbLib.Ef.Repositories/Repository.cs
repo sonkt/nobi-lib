@@ -1,6 +1,4 @@
-﻿using GbLib.Base;
-using GbLib.Ef.Entities;
-using Microsoft.AspNetCore.Http;
+﻿using GbLib.Ef.Entities;
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using System.Linq.Expressions;

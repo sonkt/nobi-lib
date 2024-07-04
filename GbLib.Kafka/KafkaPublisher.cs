@@ -1,5 +1,5 @@
 ﻿using Confluent.Kafka;
-using GbLib.Base;
+using GbLib.Events;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text.Json;

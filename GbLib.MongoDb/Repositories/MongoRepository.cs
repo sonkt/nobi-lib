@@ -1,5 +1,4 @@
-﻿using GbLib.Base;
-using GbLib.MongoDb.Context;
+﻿using GbLib.MongoDb.Context;
 using GbLib.MongoDb.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -162,7 +161,7 @@ namespace GbLib.MongoDb.Repositories
 
         public void Add(TEntity entity, string collectionName = "")
         {
-            _mongoDbContext.Collection<TEntity>(collectionName).InsertOne(entity, new InsertOneOptions() { BypassDocumentValidation=false });
+            _mongoDbContext.Collection<TEntity>(collectionName).InsertOne(entity, new InsertOneOptions() { BypassDocumentValidation = false });
         }
 
         public void Update(TEntity entity, string collectionName = "")

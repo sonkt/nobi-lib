@@ -1,5 +1,4 @@
-﻿using GbLib.Base.Helpers;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using System.Drawing;
 using System.Reflection;
@@ -174,7 +173,7 @@ namespace GbLib.ExcelLib
         {
             try
             {
-                Type modelType = TypeHelper.GetItemTypeOfList(listObjects);
+                Type modelType = GetItemTypeOfList(listObjects);
                 var columns = listConfigColumns.OrderBy(x => x.Order).ToList();
                 var numberRowOfHeader = columns?.First()?.Header?.Count ?? 0;
                 var numberRowOfFooter = columns?.First()?.Footer?.Count ?? 0;
@@ -447,7 +446,14 @@ namespace GbLib.ExcelLib
             picture.SetSize(width, height);
             picture.SetPosition(row, marginTop, col, marginLeft);
         }
-
+        public Type GetItemTypeOfList(IList<object> myList)
+        {
+            if (myList == null || myList.Count == 0)
+            {
+                return null;
+            }
+            return myList[0].GetType();
+        }
         #endregion Support Function
     }
 

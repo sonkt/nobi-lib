@@ -1,5 +1,5 @@
-﻿using GbLib.Base;
-using GbLib.Base.Attributes;
+﻿using GbLib.Attributes;
+using GbLib.Events;
 using MicroOrm.Dapper.Repositories.Attributes.LogicalDelete;
 using System.Collections.Concurrent;
 

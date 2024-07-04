@@ -1,5 +1,4 @@
-﻿using GbLib.Base;
-using System.Linq.Expressions;
+﻿using System.Linq.Expressions;
 
 namespace GbLib.Ef.Repositories
 {

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <Title>GbLib.Jaeger</Title>
     <Authors>Sơn Khiếu &amp; Contributors</Authors>
-    <Version>1.1.0</Version>
+	  <Version>1.3.0</Version>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,5 +1,5 @@
 ﻿using Confluent.Kafka;
-using GbLib.Base;
+using GbLib.Events;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;

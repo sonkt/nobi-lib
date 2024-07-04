@@ -1,5 +1,4 @@
-﻿using GbLib.Base;
-using GbLib.MongoDb.Entities;
+﻿using GbLib.MongoDb.Entities;
 using MongoDB.Bson;
 using MongoDB.Driver;
 
@@ -13,7 +12,9 @@ namespace GbLib.MongoDb.Repositories
         Task<List<TEntity>> AddAsync(List<TEntity> entities, string collectionName = "");
 
         Task<TEntity> AddAsync(TEntity entity, string collectionName = "");
+
         void Add(List<TEntity> entities, string collectionName = "");
+
         void Add(TEntity entity, string collectionName = "");
 
         Task<bool> DeleteAsync(TEntity entity, string collectionName = "");
@@ -21,9 +22,11 @@ namespace GbLib.MongoDb.Repositories
         Task<bool> DeleteAsync(List<TEntity> entities, string collectionName = "");
 
         Task<TEntity> UpdateAsync(TEntity entity, string collectionName = "");
+
         void Update(TEntity entity, string collectionName = "");
 
         Task<List<TEntity>> UpdateAsync(List<TEntity> entities, string collectionName = "");
+
         void Update(List<TEntity> entities, string collectionName = "");
 
         #endregion Command Action

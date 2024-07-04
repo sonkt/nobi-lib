@@ -1,6 +1,5 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore.Storage;
-using System.Data;
 
 namespace GbLib.Ef.Repositories
 {
@@ -38,7 +37,7 @@ namespace GbLib.Ef.Repositories
         /// </summary>
         /// <param name="sql">Câu lệnh Sql</param>
         /// <returns>Trả về là 1 giá trị số nguyên thể hiện số dòng bị tác động</returns>
-        Task<int> FromNonQuerySql(string sql, CancellationToken cancellationToken =default);
+        Task<int> FromNonQuerySql(string sql, CancellationToken cancellationToken = default);
 
         /// <summary>
         /// Thực thi Store procedure với các tham số truyền vào

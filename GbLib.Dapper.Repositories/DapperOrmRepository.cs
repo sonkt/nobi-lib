@@ -1,6 +1,4 @@
-﻿using Dapper;
-using GbLib.Base.Helpers;
-using GbLib.Dapper.Entities;
+﻿using GbLib.Dapper.Entities;
 using GbLib.Dapper.Entities.Context;
 using MicroOrm.Dapper.Repositories;
 using MicroOrm.Dapper.Repositories.SqlGenerator;
@@ -268,7 +266,7 @@ namespace GbLib.Dapper.Repositories
                 var attributes = property.GetCustomAttributes(false);
                 foreach (var attribute in attributes)
                 {
-                    if (attribute is GbLib.Base.Attributes.KeyAttribute || attribute is KeyAttribute)
+                    if (attribute is GbLib.Attributes.KeyAttribute || attribute is KeyAttribute)
                     {
                         if (property.PropertyType == typeof(Guid))
                         {
@@ -296,7 +294,7 @@ namespace GbLib.Dapper.Repositories
                     var value = (DateTime)property.GetValue(entity, null);
                     if (value == System.DateTime.MinValue)
                     {
-                        property.SetValue(entity, DateTimeHelper.MinSystemDate);
+                        property.SetValue(entity, new DateTime(1753, 1, 1));
                     }
                 }
                 // Nếu là kiểu DateTime cho phép null mà giá trị = MinValue thì Set nó về null

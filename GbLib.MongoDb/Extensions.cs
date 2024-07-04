@@ -1,6 +1,6 @@
-﻿using GbLib.Base;
-using GbLib.MongoDb.Context;
+﻿using GbLib.MongoDb.Context;
 using GbLib.MongoDb.Repositories;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MongoDB.Driver;
 
@@ -49,9 +49,13 @@ namespace GbLib.MongoDb
             return (totalPages, count == null ? 0 : count.Value, data);
         }
 
-        public static IServiceCollection AddMongoRepository(this IServiceCollection services)
+        public static IServiceCollection AddMongoRepository(this IServiceCollection services, string section = "Mongo")
         {
-            services.AddAppSettings<MongoDbOptions>("Mongo");
+            var svcProvider = services.BuildServiceProvider();
+            var config = svcProvider.GetRequiredService<IConfiguration>();
+            var options = new MongoDbOptions();
+            config.Bind(section, options);
+            services.AddSingleton(options);
             services.AddScoped(typeof(IMongoRepository<>), typeof(MongoRepository<>));
             return services;
         }

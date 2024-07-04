@@ -1,4 +1,4 @@
-﻿using GbLib.Base;
+﻿using GbLib.Events;
 
 namespace GbLib.Kafka
 {
