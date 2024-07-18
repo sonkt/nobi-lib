@@ -1,6 +1,6 @@
 ﻿namespace GbLib.Ef.Repositories
 {
-    public class PaginationSet<T>
+    public class Pagination<T>
     {
         #region Properties
 

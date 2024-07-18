@@ -1,4 +1,5 @@
-﻿using GbLib.Ef.Repositories;
+﻿using AutoMapper;
+using GbLib.Ef.Repositories;
 
 namespace TestEf.Application
 {

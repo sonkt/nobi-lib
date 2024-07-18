@@ -61,7 +61,7 @@ namespace TestEf.API.Controllers
         [Route("paged/{pageSize}/{pageNumber}")]
         public async Task<PagedData?> GetPaged(int pageSize, int pageNumber)
         {
-            return await _testEfService.GetPagedAsync(pageSize, pageNumber);
+            return await _testEfService.GetPagedAsync(pageSize, pageNumber, "TestEfEntity.TestName");
         }
 
 

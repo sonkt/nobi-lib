@@ -57,18 +57,13 @@ namespace GbLib.Ef.Repositories
             }
         }
 
-        public virtual Task<List<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includeProperties = "")
+        public virtual Task<List<TEntity>> FindAllAsync(Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
             IQueryable<TEntity> query = _dbSet.AsNoTracking();
 
             if (filter != null)
             {
                 query = query.Where(filter);
-            }
-
-            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
             }
 
             if (orderBy != null)
@@ -95,7 +90,7 @@ namespace GbLib.Ef.Repositories
             return _dbSet.AsNoTracking().FirstOrDefaultAsync(filter);
         }
 
-        public virtual async Task<PaginationSet<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null, string includeProperties = "")
+        public virtual async Task<Pagination<TEntity>> FindPagedAsync(int pageNumber, int pageSize, Expression<Func<TEntity, bool>>? filter = null, Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>>? orderBy = null)
         {
             if (pageNumber == 0)
             {
@@ -114,12 +109,6 @@ namespace GbLib.Ef.Repositories
                 query = query.Where(filter);
             }
 
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-            {
-                query = query.Include(includeProperty);
-            }
-
             if (orderBy != null)
             {
                 items = await orderBy(query).Skip(skip).Take(pageSize).ToListAsync();
@@ -129,7 +118,7 @@ namespace GbLib.Ef.Repositories
                 items = await query.Skip(skip).Take(pageSize).ToListAsync();
             }
             var totalRows = await query.CountAsync();
-            return new PaginationSet<TEntity>
+            return new Pagination<TEntity>
             {
                 Items = items,
                 TotalCount = totalRows

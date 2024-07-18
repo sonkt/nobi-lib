@@ -29,10 +29,10 @@ namespace GbLib.RMQ
             services.AddSingleton<ModelFactory>();
             services.AddSingleton(sp => sp.GetRequiredService<ModelFactory>().CreateChannel());
             services.AddSingleton<RabbitUtility>();
-
             return services;
         }
 
+        [Obsolete("Có thể sử dụng xxxByPosfix trong thư viện GbLib.Base")]
         public static void UseRabbitMq(this ContainerBuilder builder, Assembly? assembly = null)
         {
             if (assembly == null)

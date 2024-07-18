@@ -1,6 +1,8 @@
 ﻿using Autofac;
+using Autofac.Core;
 using GbLib.Base.Mvc;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Mvc;
@@ -37,7 +39,47 @@ namespace GbLib.Base
                 .InstancePerLifetimeScope();
         }
 
-        public static IMvcCoreBuilder AddCustomMvc(this IServiceCollection services,string origin = "customOrigins")
+        public static IServiceCollection SingletonByPosfix<T>(this IServiceCollection services, string posfix)
+        {
+            services.Scan(scan => scan
+                .FromAssemblyOf<T>()
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith(posfix)))
+                   .AsImplementedInterfaces()
+                   .WithSingletonLifetime());
+            return services;
+        }
+        public static IServiceCollection ScopedByPosfix<T>(this IServiceCollection services, string posfix)
+        {
+            services.Scan(scan => scan
+                .FromAssemblyOf<T>()
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith(posfix)))
+                   .AsImplementedInterfaces()
+                   .WithScopedLifetime());
+            return services;
+        }
+        public static IServiceCollection TransientByPosfix<T>(this IServiceCollection services, string posfix)
+        {
+            services.Scan(scan => scan
+                .FromAssemblyOf<T>()
+                .AddClasses(classes => classes.Where(type => type.Name.EndsWith(posfix)))
+                   .AsImplementedInterfaces()
+                   .WithTransientLifetime());
+            return services;
+        }
+
+        public static IServiceCollection AddKestrelOptions(this IServiceCollection services, string section = "Kestrel")
+        {
+            using (var serviceProvider = services.BuildServiceProvider())
+            {
+                var configuration = serviceProvider.GetService<IConfiguration>();
+                var kestrelOptions = new KestrelServerOptions();
+                configuration.Bind(section, kestrelOptions);
+                services.Configure<KestrelServerOptions>("Kestrel", configuration);
+            }
+            return services;
+        }
+
+        public static IMvcCoreBuilder AddCustomMvc(this IServiceCollection services, string origin = "customOrigins")
         {
             services.AddCors(options =>
             {

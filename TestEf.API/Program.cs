@@ -1,9 +1,8 @@
-
-using GbLib.Jwt;
-using GbLib.Ef.Repositories;
-using TestEf.Application;
-using GbLib.Swagger;
 using GbLib.Base;
+using GbLib.Ef.Repositories;
+using GbLib.Jwt;
+using GbLib.Swagger;
+using TestEf.Application;
 
 namespace TestEf.API
 {
@@ -27,7 +26,6 @@ namespace TestEf.API
                             .AddClasses(classes => classes.Where(type => type.Name.EndsWith("Service")))
                                .AsImplementedInterfaces()
                                .WithScopedLifetime());
-
             builder.Services.AddHostedService<TestWorker>();
 
             var app = builder.Build();

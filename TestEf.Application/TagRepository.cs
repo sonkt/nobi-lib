@@ -1,4 +1,5 @@
-﻿using GbLib.Ef.Repositories;
+﻿using AutoMapper;
+using GbLib.Ef.Repositories;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;

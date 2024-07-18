@@ -2,6 +2,7 @@
 using GbLib.Ef.Service;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace TestEf.Application
 {
@@ -115,6 +116,28 @@ namespace TestEf.Application
             });
         }
 
+        public async Task<PagedData> GetPagedAsync(int pageIndex, int pageSize, string columns)
+        {
+            var repo = UnitOfWork.GetRepository<TestEfRepository>();
+            if (repo != null)
+            {
+                var result = await repo.FindPagedAsync(pageSize, pageSize, m => m.IsDeleted != true, m => m.OrderBy(f => f.TestName));
+                return new PagedData
+                {
+                    TotalRows = result.TotalCount,
+                    Items = result.Items?.Select(m => new TestEfEntity
+                    {
+                        TestName = m.TestName,
+                        Id = m.Id
+                    })?.ToList() ?? new List<TestEfEntity> { }
+                };
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public async Task<bool> UpdateItemAsync(TestEfEntity item, Guid Id)
         {
             try
@@ -163,5 +186,6 @@ namespace TestEf.Application
         Task<int> DeleteByIdAsync(Guid id);
 
         Task<PagedData> GetPagedAsync(int pageIndex, int pageSize);
+        Task<PagedData> GetPagedAsync(int pageIndex, int pageSize, string columns);
     }
 }
