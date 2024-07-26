@@ -8,7 +8,7 @@
 		<Title>GbLib.Kafka</Title>
 		<Authors>Sơn Khiếu &amp; Contributors</Authors>
 		<Description>The library of Kafka</Description>
-		<Version>1.3.0</Version>
+		<Version>1.4.0</Version>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -22,6 +22,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<ProjectReference Include="..\GbLib.Events\GbLib.Events.csproj" />
+		<ProjectReference Include="..\GbLib.Extensions\GbLib.Extensions.csproj" />
 	</ItemGroup>
 
 </Project>

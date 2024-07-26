@@ -1,5 +1,6 @@
 ﻿using Confluent.Kafka;
 using GbLib.Events;
+using GbLib.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -8,29 +9,23 @@ using System.Reflection;
 
 namespace GbLib.Kafka
 {
-    public class KafkaSubcriber : IKafkaConsumer, IDisposable
+    public class KafkaSubcriber<TConsumerConf> : IKafkaConsumer<TConsumerConf>, IDisposable
+         where TConsumerConf : ConsumerConfig
     {
         private readonly IConsumer<string, string> _consumer;
-        private readonly ILogger<KafkaSubcriber> _logger;
-        private readonly KafkaOptions _kafkaOptions;
+        private readonly ILogger<KafkaSubcriber<TConsumerConf>> _logger;
         private readonly IServiceProvider _serviceProvider;
-        private readonly ConsumerConfig _consumerConfig;
-        private readonly string _defaultTopic;
+        private readonly TConsumerConf _consumerConfig;
 
         public KafkaSubcriber(IApplicationBuilder app)
         {
             _serviceProvider = app.ApplicationServices.GetService<IServiceProvider>();
-            _kafkaOptions = _serviceProvider.GetService<KafkaOptions>();
-            if (_kafkaOptions.Enabled)
-            {
-                _logger = app.ApplicationServices.GetService<ILogger<KafkaSubcriber>>();
-                _consumerConfig = app.ApplicationServices.GetService<ConsumerConfig>();
-                _consumer = new ConsumerBuilder<string, string>(_consumerConfig).Build();
-                _defaultTopic = _kafkaOptions.DefaultTopic;
-            }
+            _logger = app.ApplicationServices.GetService<ILogger<KafkaSubcriber<TConsumerConf>>>();
+            _consumerConfig = app.ApplicationServices.GetService<TConsumerConf>();
+            _consumer = new ConsumerBuilder<string, string>(_consumerConfig).Build();
         }
 
-        public IKafkaConsumer ConsumeEvent<TEvent>() where TEvent : IEvent
+        public IKafkaConsumer<TConsumerConf> ConsumeEvent<TEvent>() where TEvent : IEvent
         {
             var cts = new CancellationTokenSource();
             Task.Factory.StartNew(() => StartConsumerLoopAsync<TEvent>(cts.Token));
@@ -44,12 +39,9 @@ namespace GbLib.Kafka
 
         private void StartConsumerLoopAsync<TEvent>(CancellationToken cancellationToken) where TEvent : IEvent
         {
-            var topic = $"{_kafkaOptions.PrefixTopic}{GetTopic<TEvent>()}";
-            if (string.IsNullOrEmpty(topic))
-            {
-                topic = $"{_kafkaOptions.PrefixTopic}{_defaultTopic}";
-            }
-            _consumer.Subscribe(topic);
+            var _topic = $"{GetTopic<TEvent>()}";
+            var _key = $"{GetKey<TEvent>()}";
+            _consumer.Subscribe(_topic);
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -60,14 +52,14 @@ namespace GbLib.Kafka
                     {
                         continue;
                     }
-                    if (consumeResult.Topic != topic)
+                    if (consumeResult.Topic != _topic)
                     {
                         continue;
                     }
 
                     var message = consumeResult?.Message?.Value;
                     var key = consumeResult?.Message?.Key;
-                    if (string.IsNullOrEmpty(message) || (string.IsNullOrEmpty(key) && !_kafkaOptions.UseKeyNull))
+                    if (string.IsNullOrEmpty(message) || ((string.IsNullOrEmpty(key) && !string.IsNullOrEmpty(_key))))
                     {
                         continue;
                     }
@@ -98,16 +90,31 @@ namespace GbLib.Kafka
                     _logger.LogError(e, $"Có lỗi khi consume kafka");
                     break;
                 }
-                Thread.Sleep(_kafkaOptions.SleepMs);
+                Thread.Sleep(_consumerConfig.HeartbeatIntervalMs != null ? _consumerConfig.HeartbeatIntervalMs.Value : 3000);
             }
+        }
+        private string GetConsumerGroup<T>()
+        {
+            var _excName = typeof(T).GetCustomAttribute<BusEventAttribute>()?.ExchangeName ?? $"{typeof(T).GetGenericTypeName()}";
+            _excName = string.IsNullOrWhiteSpace(_excName) ? string.Empty : $"{_excName}";
+
+            return $"{_excName}".ToLowerInvariant();
         }
 
         private string GetTopic<T>()
         {
-            var _topicName = typeof(T).GetCustomAttribute<BusEventAttribute>()?.TopicName ?? _defaultTopic;
+            var _topicName = typeof(T).GetCustomAttribute<BusEventAttribute>()?.QueueName ?? $"{typeof(T).GetGenericTypeName()}";
             _topicName = string.IsNullOrWhiteSpace(_topicName) ? string.Empty : $"{_topicName}";
 
             return $"{_topicName}".ToLowerInvariant();
+        }
+
+        private string GetKey<T>()
+        {
+            var _key = typeof(T).GetCustomAttribute<BusEventAttribute>()?.RoutingKey ?? "";
+            _key = string.IsNullOrWhiteSpace(_key) ? string.Empty : $"{_key}";
+
+            return $"{_key}".ToLowerInvariant();
         }
     }
 }

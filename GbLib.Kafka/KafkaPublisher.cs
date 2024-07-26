@@ -1,30 +1,25 @@
 ﻿using Confluent.Kafka;
 using GbLib.Events;
+using GbLib.Extensions;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
 using System.Text.Json;
 
 namespace GbLib.Kafka
 {
-    public class KafkaPublisher : IKafkaProducer, IDisposable
+    public class KafkaPublisher<TProducerConf> : IKafkaProducer<TProducerConf>, IDisposable
+        where TProducerConf : ProducerConfig
     {
-        private readonly IProducer<string, string> _producer;
-        private readonly ILogger<KafkaPublisher> _logger;
-        private readonly KafkaOptions _kafkaOptions;
-        private readonly ProducerConfig _producerConfig;
-        private readonly string _defaultTopic;
+        private IProducer<string, string> _producer;
+        private readonly ILogger<KafkaPublisher<TProducerConf>> _logger;
+        private readonly TProducerConf _producerConfig;
 
-        public KafkaPublisher(ILogger<KafkaPublisher> logger,
-            ProducerConfig producerConfig,
-            KafkaOptions kafkaOptions
-            )
+        public KafkaPublisher(ILogger<KafkaPublisher<TProducerConf>> logger, TProducerConf producerConfig)
         {
             _logger = logger;
             _logger = logger;
             _producerConfig = producerConfig;
-            _kafkaOptions = kafkaOptions;
             _producer = new ProducerBuilder<string, string>(_producerConfig).Build();
-            _defaultTopic = _kafkaOptions.DefaultTopic;
         }
 
         public void Dispose()
@@ -36,14 +31,10 @@ namespace GbLib.Kafka
         {
             try
             {
-                var topic = $"{_kafkaOptions.PrefixTopic}{GetTopic<TEvent>()}";
+                var topic = GetTopic<TEvent>();
                 var key = GetKey<TEvent>();
-                if (string.IsNullOrEmpty(topic))
-                {
-                    topic = $"{_kafkaOptions.PrefixTopic}{_defaultTopic}";
-                }
                 var jsonData = JsonSerializer.Serialize(_event);
-                var message = new Message<string, string> { Key = _kafkaOptions.UseKeyNull ? null : key, Value = jsonData };
+                var message = new Message<string, string> { Key = key, Value = jsonData };
 
                 var cts = new CancellationTokenSource();
                 cts.CancelAfter(10000);
@@ -61,10 +52,9 @@ namespace GbLib.Kafka
             }
             return false;
         }
-
         private string GetTopic<T>()
         {
-            var _topicName = typeof(T).GetCustomAttribute<BusEventAttribute>()?.TopicName ?? _defaultTopic;
+            var _topicName = typeof(T).GetCustomAttribute<BusEventAttribute>()?.QueueName ?? $"{typeof(T).GetGenericTypeName()}";
             _topicName = string.IsNullOrWhiteSpace(_topicName) ? string.Empty : $"{_topicName}";
 
             return $"{_topicName}".ToLowerInvariant();
@@ -72,10 +62,10 @@ namespace GbLib.Kafka
 
         private string GetKey<T>()
         {
-            var _exName = typeof(T).GetCustomAttribute<BusEventAttribute>()?.KeyName ?? _defaultTopic;
-            _exName = string.IsNullOrWhiteSpace(_exName) ? string.Empty : $"{_exName}";
+            var _key = typeof(T).GetCustomAttribute<BusEventAttribute>()?.RoutingKey ?? "";
+            _key = string.IsNullOrWhiteSpace(_key) ? string.Empty : $"{_key}";
 
-            return $"{_exName}".ToLowerInvariant();
+            return $"{_key}".ToLowerInvariant();
         }
     }
 }

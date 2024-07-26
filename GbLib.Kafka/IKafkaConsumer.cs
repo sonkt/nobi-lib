@@ -1,12 +1,17 @@
-﻿using GbLib.Events;
+﻿using Confluent.Kafka;
+using GbLib.Events;
 
 namespace GbLib.Kafka
 {
-    public interface IKafkaConsumer
+    /// <summary>
+    /// Defines the <see cref="IKafkaConsumer" />.
+    /// </summary>
+    public interface IKafkaConsumer<TConsumerConf>
+        where TConsumerConf : ConsumerConfig
     {
         #region Methods
 
-        IKafkaConsumer ConsumeEvent<TEvent>() where TEvent : IEvent;
+        IKafkaConsumer<TConsumerConf> ConsumeEvent<TEvent>() where TEvent : IEvent;
 
         #endregion Methods
     }
