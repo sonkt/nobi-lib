@@ -65,8 +65,8 @@ namespace GbLib.RabbitMQ
         {
             try
             {
-                var exchangeName = _rabbitUtility.GetExchangeName<TEvent>();
-                var queueName = _rabbitUtility.GetQueueName<TEvent>();
+                var exchangeName = _rabbitUtility.GetExchangeName<TEvent>(_config.Exchange.Name);
+                var queueName = _rabbitUtility.GetQueueName<TEvent>(_config.Prefix);
                 var routingKey = _rabbitUtility.GetRoutingKey<TEvent>();
                 _channel.ExchangeDeclare(exchangeName, _config.Exchange.Type, _config.Exchange.Durable, _config.Exchange.AutoDelete);
                 _channel.QueueDeclare(queueName, _config.Queue.Durable, _config.Queue.Exclusive, _config.Queue.AutoDelete ? !_rabbitUtility.IsPublic<TEvent>() ? true : false : false, null);

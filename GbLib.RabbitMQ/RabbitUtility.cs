@@ -10,17 +10,17 @@ namespace GbLib.RabbitMQ
         {
         }
 
-        public string GetExchangeName<T>(string defaultName = "", string prefix = "")
+        public string GetExchangeName<T>(string defaultName = "")
         {
             var _exchange = typeof(T).GetCustomAttribute<BusEventAttribute>()?.ExchangeName ?? defaultName;
-            return $"{prefix}{_exchange}".ToLowerInvariant();
+            return $"{_exchange}".ToLowerInvariant();
         }
 
-        public string GetRoutingKey<T>(string prefix = "")
+        public string GetRoutingKey<T>()
         {
             var _routingKey = typeof(T).GetCustomAttribute<BusEventAttribute>()?.RoutingKey ?? typeof(T).Name;
             _routingKey = string.IsNullOrWhiteSpace(_routingKey) ? string.Empty : $"{_routingKey}";
-            return $"{prefix}{_routingKey}".ToLowerInvariant();
+            return $"{_routingKey}".ToLowerInvariant();
         }
 
         public string GetQueueName<T>(string prefix = "")
