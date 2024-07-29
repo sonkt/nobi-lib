@@ -35,6 +35,19 @@ namespace GbLib.RabbitMQ
             _logger = app.ApplicationServices.GetService<ILogger<RabbitMqSubscriber<TConfig>>>();
         }
 
+        public RabbitMqSubscriber(IServiceCollection services)
+        {
+            var resolver = services.BuildServiceProvider();
+            using (var scope = resolver.CreateScope())
+            {
+                _serviceProvider = scope.ServiceProvider.GetService<IServiceProvider>();
+                _config = _serviceProvider.GetService<TConfig>();
+                _rabbitUtility = _serviceProvider.GetService<RabbitUtility>();
+                _channel = new ChanelBuilder(_config).Build();
+                _logger = _serviceProvider.GetService<ILogger<RabbitMqSubscriber<TConfig>>>();
+            }
+        }
+
         public void Dispose()
         {
             if (_channel.IsOpen)

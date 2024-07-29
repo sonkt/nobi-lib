@@ -3,6 +3,7 @@ using GbLib.RabbitMQ.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using RabbitMQ.Client;
 
 namespace GbLib.RabbitMQ
@@ -51,5 +52,6 @@ namespace GbLib.RabbitMQ
         }
 
         public static IRabbitMqSubscriber<TConfig> RabbitSubcriber<TConfig>(this IApplicationBuilder app) where TConfig : RabbitConfig => new RabbitMqSubscriber<TConfig>(app);
+        public static IRabbitMqSubscriber<TConfig> RabbitSubcriber<TConfig>(this IHost app, IServiceCollection service) where TConfig : RabbitConfig => new RabbitMqSubscriber<TConfig>(service);
     }
 }
