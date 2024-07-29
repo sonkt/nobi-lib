@@ -1,13 +1,14 @@
-﻿using GbLib.Base;
+﻿using GbLib.RabbitMQ.Configurations;
 
 namespace GbLib.RabbitMQ
 {
-    public interface IRabbitMqSubscriber
+    public interface IRabbitMqSubscriber<TConfig>
+        where TConfig : RabbitConfig
     {
         #region Methods
 
-        IRabbitMqSubscriber SubscribeEvent<TEvent>()
-            where TEvent : IEvent;
+        IRabbitMqSubscriber<TConfig> SubscribeEvent<TEvent>()
+            where TEvent : IRabbitEvent;
 
         #endregion Methods
     }

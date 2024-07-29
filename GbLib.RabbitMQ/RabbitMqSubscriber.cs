@@ -1,4 +1,5 @@
-﻿using GbLib.Base;
+﻿using GbLib.RabbitMQ.Builders;
+using GbLib.RabbitMQ.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
@@ -10,17 +11,16 @@ using System.Text;
 
 namespace GbLib.RabbitMQ
 {
-    public class RabbitMqSubscriber : IRabbitMqSubscriber, IDisposable
+    public class RabbitMqSubscriber<TConfig> : IRabbitMqSubscriber<TConfig>, IDisposable
+         where TConfig : RabbitConfig
     {
         #region Fields
 
-        private readonly ILogger<RabbitMqSubscriber> _logger;
+        private readonly ILogger<RabbitMqSubscriber<TConfig>> _logger;
         private readonly RabbitUtility _rabbitUtility;
-        private readonly RabbitMqOptions _rabbitMqOptions;
         private readonly IServiceProvider _serviceProvider;
-        private readonly IConnectionFactory _connectionFactory;
         private IModel _channel;
-        private IConnection _connection;
+        private readonly TConfig _config;
 
         #endregion Fields
 
@@ -29,15 +29,10 @@ namespace GbLib.RabbitMQ
         public RabbitMqSubscriber(IApplicationBuilder app)
         {
             _serviceProvider = app.ApplicationServices.GetService<IServiceProvider>();
-            _rabbitMqOptions = _serviceProvider.GetService<RabbitMqOptions>();
+            _config = _serviceProvider.GetService<TConfig>();
             _rabbitUtility = app.ApplicationServices.GetService<RabbitUtility>();
-            _connectionFactory = app.ApplicationServices.GetService<IConnectionFactory>();
-            _connection = _connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
-            if (_rabbitMqOptions.Enabled)
-            {
-                _logger = app.ApplicationServices.GetService<ILogger<RabbitMqSubscriber>>();
-            }
+            _channel = new ChanelBuilder(_config).Build();
+            _logger = app.ApplicationServices.GetService<ILogger<RabbitMqSubscriber<TConfig>>>();
         }
 
         public void Dispose()
@@ -47,110 +42,85 @@ namespace GbLib.RabbitMQ
                 _channel.Close();
             }
             _channel.Dispose();
-            if (_connection.IsOpen)
-            {
-                _connection.Close();
-            }
-            _connection.Dispose();
         }
 
         #endregion Constructors
 
         #region Methods
 
-        public IRabbitMqSubscriber SubscribeEvent<TEvent>() where TEvent : IEvent
+        public IRabbitMqSubscriber<TConfig> SubscribeEvent<TEvent>() where TEvent : IRabbitEvent
         {
-            var exchange = _rabbitUtility.GetExchangeName<TEvent>();
-            var queue = _rabbitUtility.GetQueueName<TEvent>();
-            var routingKey = _rabbitUtility.GetRoutingKey<TEvent>();
-
-            // Tạo Exchange
             try
             {
-                _channel.ExchangeDeclare(exchange,
-                                 type: _rabbitMqOptions.Exchange.Type,
-                                 _rabbitMqOptions.Exchange.Durable,
-                                 _rabbitMqOptions.Exchange.AutoDelete);
+                var exchangeName = _rabbitUtility.GetExchangeName<TEvent>();
+                var queueName = _rabbitUtility.GetQueueName<TEvent>();
+                var routingKey = _rabbitUtility.GetRoutingKey<TEvent>();
+                _channel.ExchangeDeclare(exchangeName, _config.Exchange.Type, _config.Exchange.Durable, _config.Exchange.AutoDelete);
+                _channel.QueueDeclare(queueName, _config.Queue.Durable, _config.Queue.Exclusive, _config.Queue.AutoDelete ? !_rabbitUtility.IsPublic<TEvent>() ? true : false : false, null);
+                _channel.QueueBind(queueName, exchangeName, routingKey);
+                _channel.BasicQos(0, _config.PrefetchCount, false);
+
+                var consummerAsync = new AsyncEventingBasicConsumer(_channel);
+                consummerAsync.Received += ConsummerAsync_Received<TEvent>;
+                _channel.BasicConsume(queueName,
+                            autoAck: false,
+                            consumer: consummerAsync);
+                Console.WriteLine($"[GbLib]: Bắt đầu đợi Event {typeof(TEvent).Name}");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, $" [!] Exchange {exchange} đã tồn tại.");
-            }
-
-            // Tạo Queue
-            try
-            {
-                _channel.QueueDeclare(queue,
-                                _rabbitMqOptions.Queue.Durable,
-                                _rabbitMqOptions.Queue.Exclusive,
-                                _rabbitMqOptions.Queue.AutoDelete ? !_rabbitUtility.IsPublic<TEvent>() ? true : false : false,
-                                null);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $" [!] Queue {queue} đã tồn tại.");
-            }
-            // Gán queue vào Exchange với Routing Key
-            try
-            {
-                _channel.QueueBind(queue,
-                              exchange,
-                              routingKey);
-                _channel.BasicQos(prefetchSize: 0, prefetchCount: 1, global: false);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $" [!] Queue {queue} đã được gán vào exchang {exchange} với routing key {routingKey}.");
-            }
-
-            Console.WriteLine($" [*] Waiting for messages from {typeof(TEvent).Name}.");
-
-            var consumer = new EventingBasicConsumer(_channel);
-            consumer.Received += async (sender, ea) =>
-            {
-                var body = ea.Body.ToArray();
-                var message = Encoding.UTF8.GetString(body);
-                var eventHandler = _serviceProvider.GetService<IEventHandler<TEvent>>();
-                var dataEvent = JsonConvert.DeserializeObject<TEvent>(message);
-                var resultHandle = await TryHandleAsync(dataEvent, () => eventHandler.HandleAsync(dataEvent, CorrelationContext.Create(Guid.NewGuid())));
-                if (resultHandle)
-                {
-                    _channel.BasicAck(ea.DeliveryTag, false);
-                }
-            };
-            try
-            {
-                _channel.BasicConsume(queue,
-                                autoAck: false,
-                                consumer: consumer);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Consume không thành công!");
+                Console.WriteLine($"[GbLib]: RabbitMQ receiver: Có lỗi khi subscribe event: {typeof(TEvent).Name}. {ex.Message}");
             }
             return this;
         }
 
-        private async Task<bool> TryHandleAsync<TMessage>(TMessage message, Func<Task> handle)
+        private async Task ConsummerAsync_Received<T>(object sender, BasicDeliverEventArgs @event) where T : IRabbitEvent
         {
-            var currentRetry = 0;
+            var body = @event.Body.ToArray();
+            var message = Encoding.UTF8.GetString(body);
+            var eventHandler = _serviceProvider.GetService<IRabbitEventHandler<T>>();
+            if (eventHandler != null)
+            {
+                var dataEvent = JsonConvert.DeserializeObject<T>(message);
+                if (dataEvent != null)
+                {
+                    var resultHandle = await TryHandleAsync(() => eventHandler.HandleAsync(dataEvent));
+                    if (resultHandle)
+                    {
+                        _channel.BasicAck(@event.DeliveryTag, false);
+                    }
+                    else
+                    {
+                        _channel.BasicReject(@event.DeliveryTag, _config.EnableRequeue);
+                        Console.WriteLine($"[GbLib]: Message chưa được xử lý và đã requeue: {message}");
+                    }
+                }
+                else
+                {
+                    Console.WriteLine($"[GbLib]: Event không có dữ liệu {message}");
+                }
+            }
+            else
+            {
+                Console.WriteLine($"[GbLib]: EventHandler không tồn tại {message}");
+            }
+        }
+
+        private async Task<bool> TryHandleAsync(Func<Task> handle)
+        {
             var retryPolicy = Policy
                 .Handle<Exception>()
-                .WaitAndRetryAsync(_rabbitMqOptions.Retries, i => TimeSpan.FromSeconds(_rabbitMqOptions.RetryInterval));
-
-            var messageName = message.GetType().Name;
-
+                .WaitAndRetryAsync(_config.Retries, i => TimeSpan.FromSeconds(_config.RetryInterval));
             return await retryPolicy.ExecuteAsync(async () =>
             {
                 try
                 {
-                    var retryMessage = currentRetry == 0 ? string.Empty : $"Retry: {currentRetry}'.";
-                    var messageType = message is IEvent ? "n event" : " command";
                     await handle();
                     return true;
                 }
-                catch
+                catch (Exception ex)
                 {
+                    Console.WriteLine($"[GbLib]: Có lỗi khi xử ký event {ex.Message}");
                     return false;
                 }
             });

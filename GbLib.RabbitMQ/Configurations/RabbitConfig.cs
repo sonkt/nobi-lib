@@ -1,12 +1,10 @@
-﻿namespace GbLib.RabbitMQ
+﻿namespace GbLib.RabbitMQ.Configurations
 {
-    public class RabbitMqOptions
+    public class RabbitConfig
     {
         #region Properties
-
         public bool Enabled { get; set; }
-        public string Namespace { get; set; }
-        public string ExchangePrefix { get; set; }
+        public string Prefix { get; set; }
         public int Retries { get; set; }
         public int RetryInterval { get; set; }
         public string Username { get; set; }
@@ -21,6 +19,8 @@
         public bool AutoCloseConnection { get; set; }
         public bool AutomaticRecovery { get; set; }
         public bool TopologyRecovery { get; set; }
+        public ushort PrefetchCount { get; set; } = 1;
+        public bool EnableRequeue { get; set; } = true;
         public ExchangeOption Exchange { get; set; }
         public QueueOption Queue { get; set; }
 

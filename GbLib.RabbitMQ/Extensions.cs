@@ -1,24 +1,25 @@
 ﻿using Autofac;
+using GbLib.RabbitMQ.Configurations;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using RabbitMQ.Client;
-using System.Reflection;
 
 namespace GbLib.RabbitMQ
 {
     public static class Extensions
     {
-        public static IServiceCollection AddBusRabbitMq(this IServiceCollection services)
+        public static IServiceCollection AddRabbitConfig<TConfig>(this IServiceCollection services, string sectionName = "RabbitMq") where TConfig : RabbitConfig, new()
         {
             var resolver = services.BuildServiceProvider();
             using (var scope = resolver.CreateScope())
             {
                 var config = scope.ServiceProvider.GetService<IConfiguration>();
 
-                var options = new RabbitMqOptions();
-                config.Bind("RabbitMq", options);
+                var options = new TConfig();
+                config.Bind(sectionName, options);
                 services.AddSingleton(options);
+
                 if (options.Enabled)
                 {
                     var factory = new ConnectionFactory()
@@ -29,12 +30,9 @@ namespace GbLib.RabbitMQ
                         AutomaticRecoveryEnabled = options.AutomaticRecovery,
                         Port = options.Port,
                         VirtualHost = string.IsNullOrEmpty(options.VirtualHost) ? "/" : options.VirtualHost,
-                        DispatchConsumersAsync=true
-                        //RequestedConnectionTimeout = TimeSpan.FromSeconds(options.RequestTimeout),
-                        //NetworkRecoveryInterval = TimeSpan.FromSeconds(options.RecoveryInterval)
+                        DispatchConsumersAsync = true
                     };
 
-                    services.AddSingleton<IConnectionFactory>(factory);
                     services.AddSingleton<RabbitUtility>();
                 }
 
@@ -42,13 +40,16 @@ namespace GbLib.RabbitMQ
             }
         }
 
-        public static void BuildContainerRabbitMqEventBus(this ContainerBuilder builder, Assembly assembly = null)
+        public static void RegisterRabbitPublisher<TConfig>(this ContainerBuilder builder) where TConfig : RabbitConfig
         {
-            builder.RegisterType<RabbitMqPublisher>().As<IRabbitMqPublisher>().OnActivating(e => e.Instance.Init()).SingleInstance();
-            builder.RegisterType<RabbitMqSubscriber>().As<IRabbitMqSubscriber>().InstancePerLifetimeScope();
+            builder.RegisterType<RabbitMqPublisher<TConfig>>().As<IRabbitMqPublisher<TConfig>>().SingleInstance();
         }
 
-        public static IRabbitMqSubscriber RabbitMqEventBusSubcriber(this IApplicationBuilder app)
-           => new RabbitMqSubscriber(app);
+        public static void RegisterRabbitSubcriber<TConfig>(this ContainerBuilder builder) where TConfig : RabbitConfig
+        {
+            builder.RegisterType<RabbitMqSubscriber<TConfig>>().As<IRabbitMqSubscriber<TConfig>>().SingleInstance();
+        }
+
+        public static IRabbitMqSubscriber<TConfig> RabbitSubcriber<TConfig>(this IApplicationBuilder app) where TConfig : RabbitConfig => new RabbitMqSubscriber<TConfig>(app);
     }
 }

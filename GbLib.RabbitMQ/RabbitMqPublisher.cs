@@ -1,4 +1,7 @@
-﻿using GbLib.Base;
+﻿using GbLib.RabbitMQ.Builders;
+using GbLib.RabbitMQ.Configurations;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
@@ -6,27 +9,26 @@ using System.Text;
 
 namespace GbLib.RabbitMQ
 {
-    public class RabbitMqPublisher : IRabbitMqPublisher, IDisposable
+    public class RabbitMqPublisher<TConfig> : IRabbitMqPublisher<TConfig>, IDisposable
+        where TConfig : RabbitConfig
     {
         #region Fields
 
         private IModel _channel;
-        private IConnection _connection;
-        private readonly ILogger<RabbitMqPublisher> _logger;
+        private readonly ILogger<RabbitMqPublisher<TConfig>> _logger;
         private readonly RabbitUtility _rabbitUtility;
-        private readonly RabbitMqOptions _rabbitMqOptions;
-        private readonly IConnectionFactory _connectionFactory;
+        private readonly TConfig _config;
 
         #endregion Fields
 
         #region Constructors
 
-        public RabbitMqPublisher(RabbitUtility rabbitUtility, ILogger<RabbitMqPublisher> logger, RabbitMqOptions rabbitMqOptions, IConnectionFactory connectionFactory)
+        public RabbitMqPublisher(IApplicationBuilder app)
         {
-            _logger = logger;
-            _rabbitUtility = rabbitUtility;
-            _rabbitMqOptions = rabbitMqOptions;
-            _connectionFactory = connectionFactory;
+            _logger = app.ApplicationServices.GetService<ILogger<RabbitMqPublisher<TConfig>>>();
+            _rabbitUtility = app.ApplicationServices.GetService<RabbitUtility>();
+            _config = app.ApplicationServices.GetService<TConfig>();
+            _channel = new ChanelBuilder(_config).Build();
         }
 
         public void Dispose()
@@ -36,70 +38,57 @@ namespace GbLib.RabbitMQ
                 _channel.Close();
             }
             _channel.Dispose();
-            if (_connection.IsOpen)
-            {
-                _connection.Close();
-            }
-            _connection.Dispose();
-        }
-
-        public void Init()
-        {
-            _connection = _connectionFactory.CreateConnection();
-            _channel = _connection.CreateModel();
         }
 
         #endregion Constructors
 
         #region Methods
 
-        public Task PublishAsync<TEvent>(TEvent _event, ICorrelationContext context)
-            where TEvent : IEvent
+        public Task PublishAsync<T>(T _event)
+            where T : IRabbitEvent
         {
-            var isConfirm = _rabbitUtility.IsConfirm<TEvent>();
-            if (isConfirm)
+            if (_event != null)
             {
-                _channel.ConfirmSelect();
-            }
-            var exchange = _rabbitUtility.GetExchangeName<TEvent>();
-            var routingKey = _rabbitUtility.GetRoutingKey<TEvent>();
-            var basicProperties = _channel.CreateBasicProperties();
-            basicProperties.Persistent = _rabbitMqOptions.PersistentDeliveryMode;
-
-            var body = Encoding.UTF8.GetBytes(JsonConvert.SerializeObject(_event));
-            var countRetry = 0;
-
-            while (_rabbitMqOptions.RetryInterval >= countRetry)
-            {
-                try
+                var isConfirm = _rabbitUtility.IsConfirm<T>();
+                if (isConfirm)
                 {
-                    _channel.BasicPublish(exchange, routingKey, basicProperties, body);
-                    if (isConfirm)
+                    _channel.ConfirmSelect();
+                }
+                var message = JsonConvert.SerializeObject(_event);
+                var key = _rabbitUtility.GetRoutingKey<T>();
+                var body = Encoding.UTF8.GetBytes(message);
+                var basicProperties = _channel.CreateBasicProperties();
+                basicProperties.Persistent = _config.PersistentDeliveryMode;
+                var exchangeName = _rabbitUtility.GetExchangeName<T>();
+                var countRetry = 0;
+                while (_config.RetryInterval >= countRetry)
+                {
+                    try
                     {
-                        try
+                        _channel.BasicPublish(exchange: exchangeName, routingKey: key, basicProperties: basicProperties, body: body);
+                        if (isConfirm)
                         {
-                            _channel.WaitForConfirmsOrDie(TimeSpan.FromSeconds(_rabbitMqOptions.PublishConfirmTimeout));
-                            break;
+                            try
+                            {
+                                _channel.WaitForConfirmsOrDie(TimeSpan.FromSeconds(_config.PublishConfirmTimeout));
+                                break;
+                            }
+                            catch
+                            {
+                                countRetry++;
+                            }
                         }
-                        catch (Exception ex)
+                        else
                         {
-                            countRetry++;
-                            _logger.LogError(ex, $"Dữ liệu đẩy lên Rabbit không thành công. Thử lại lần thứ {countRetry}");
+                            countRetry = _config.RetryInterval + 1;
                         }
                     }
-                    else
+                    catch
                     {
-                        countRetry = _rabbitMqOptions.RetryInterval + 1;
+                        countRetry++;
                     }
                 }
-                catch(Exception ex1)
-                {
-                    _logger.LogError(ex1, $"Dữ liệu đẩy lên Rabbit không thành công 1. Thử lại lần thứ {countRetry}");
-                    countRetry++;
-                }
-
             }
-
             return Task.CompletedTask;
         }
 

@@ -8,6 +8,7 @@ namespace GbLib.RMQ
 {
     public static class ServiceCollectionExtensions
     {
+        [Obsolete("Thư viện này chỉ dùng với 1 Server Rabbit. Để có thể sử dụng nhiều, vui lòng chuyển sang GbLib.RabbitMq Version 1.3.0 trở lên")]
         public static IServiceCollection AddRabbitMq(this IServiceCollection services, IConfiguration config)
         {
             var configSection = config.GetSection("RabbitMq");

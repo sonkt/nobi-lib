@@ -28,6 +28,7 @@
     <ProjectReference Include="..\GbLib.Base\GbLib.Base.csproj" />
     <ProjectReference Include="..\GbLib.Jwt\GbLib.Jwt.csproj" />
     <ProjectReference Include="..\GbLib.Logging\GbLib.Logging.csproj" />
+    <ProjectReference Include="..\GbLib.RabbitMQ\GbLib.RabbitMQ.csproj" />
     <ProjectReference Include="..\GbLib.Swagger\GbLib.Swagger.csproj" />
     <ProjectReference Include="..\TestEf.Application\TestEf.Application.csproj" />
   </ItemGroup>
